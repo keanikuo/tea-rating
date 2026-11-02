@@ -350,17 +350,36 @@ function closeSession(){
   if (S.playersUnsub){ S.playersUnsub(); S.playersUnsub = null }
   S.code = null; S.sess = null; S.members = {}; S.players = {}; S.me = {ratings: {}, top: []}; lastDone = -1;
 }
-async function openSession(code){
+// 載入超過 6 秒就提示網路慢，並給重試按鈕
+let loadToken = null;
+function showLoading(code){
+  loadToken = code; S.view = 'loading'; render();
+  setTimeout(() => {
+    if (loadToken !== code || S.view !== 'loading') return;
+    $('#app').innerHTML = `<div class="center">網路有點慢，還在連線中…<br><br>
+      <button class="btn" style="max-width:240px;margin:auto" data-act="retryLoad" data-code="${esc(code)}">重試</button>
+      <button class="btn ghost" style="max-width:240px;margin:8px auto 0" data-act="home">回首頁</button></div>`;
+  }, 6000);
+}
+async function openSession(code, fresh){
   code = String(code || '').trim().toUpperCase();
   if (!code) return;
   if (!S.name){ S.pendingCode = code; S.view = 'name'; return render() }
-  S.view = 'loading'; render();
-  let sess;
-  try { sess = await S.api.getSession(code) } catch (e){ console.warn(e) }
-  if (!sess){ setUrl(null); S.view = 'home'; render(); return toast('找不到這個場次代碼') }
+  let sess = fresh, player = null;
+  if (!fresh){
+    showLoading(code);
+    // 場次和自己的評分同時讀，少等一次網路
+    [sess, player] = await Promise.all([
+      S.api.getSession(code).catch(e => { console.warn(e); return null }),
+      S.api.loadPlayer(code, S.api.uid).catch(e => { console.warn(e); return null }),
+    ]);
+    if (loadToken !== code) return; // 使用者已經離開這個畫面
+    loadToken = null;
+    if (!sess){ setUrl(null); S.view = 'home'; render(); return toast('找不到這個場次代碼') }
+  }
   closeSession();
   S.code = code; S.sess = sess;
-  try { const p = await S.api.loadPlayer(code, S.api.uid); if (p) S.me = {ratings: p.ratings || {}, top: p.top || []} } catch (e){ console.warn(e) }
+  if (player) S.me = {ratings: player.ratings || {}, top: player.top || []};
   S.cur = Math.min(LS.get('tea:cur:' + code, 1), sess.cups) || 1;
   lastDone = doneCount();
   S.api.setMember(code, S.api.uid, {name: S.name, done: lastDone, t: Date.now()}).catch(console.warn);
@@ -381,17 +400,13 @@ async function openSession(code){
 async function createSession(){
   const name = ($('#nsName')?.value || '').trim() || `${today()} 品茶`;
   const cups = Math.max(1, Math.min(60, S.newCups));
-  const blind = !!$('#nsBlind')?.checked;
+  // 6 碼有 8 億多種組合，不另外查重複
   const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  let code;
-  for (let i = 0; i < 6; i++){
-    code = Array.from({length: 6}, () => A[Math.floor(Math.random() * A.length)]).join('');
-    try { if (!(await S.api.getSession(code))) break } catch { break }
-  }
-  try {
-    await S.api.createSession(code, {name, cups, blind, revealed: false, hostUid: S.api.uid, hostName: S.name, cupInfo: {}, createdAt: Date.now()});
-  } catch (e){ console.warn(e); return toast('建立失敗，請檢查網路') }
-  await openSession(code);
+  const code = Array.from({length: 6}, () => A[Math.floor(Math.random() * A.length)]).join('');
+  const data = {name, cups, blind: false, revealed: false, hostUid: S.api.uid, hostName: S.name, cupInfo: {}, createdAt: Date.now()};
+  // 不等伺服器確認，先進場次；資料會在背景同步
+  S.api.createSession(code, data).catch(e => { console.warn(e); toast('場次同步失敗，請檢查網路') });
+  await openSession(code, data);
   openShare();
 }
 
@@ -724,7 +739,8 @@ const ACT = {
   addCup(){ S.api.updateSession(S.code, {cups: S.sess.cups + 1}).then(() => toast(`已加到 ${S.sess.cups} 杯`)).catch(() => toast('加杯失敗')); closeModal() },
   toggleBlind(){ S.api.updateSession(S.code, {blind: !S.sess.blind}); closeModal() },
   reveal(){ if (!confirm('揭曉之後，大家都會看到所有人的評分，確定嗎？')) return; S.api.updateSession(S.code, {revealed: true}).catch(() => toast('揭曉失敗')) },
-  home(){ closeModal(); closeSession(); setUrl(null); S.view = 'home'; render() },
+  retryLoad(b){ openSession(b.dataset.code) },
+  home(){ loadToken = null; closeModal(); closeSession(); setUrl(null); S.view = 'home'; render() },
   theme(b){
     cycleTheme();
     if (b.classList.contains('mitem')) b.innerHTML = `${THEMES[getTheme()]}<small style="color:var(--muted);font-size:13px">　點一下切換</small>`;
