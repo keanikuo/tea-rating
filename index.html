@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3d6b4b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="品茶評分">
+<title>品茶評分</title>
+<style>
+:root{--bg:#f4efe4;--card:#fffdf8;--ink:#2a2924;--muted:#8b8475;--line:#e4dac7;--g:#3d6b4b;--g2:#dfe9da;--g3:#b5cdac;--w:#b8562f;--w2:#f6e2d6;--w3:#e8b49b;--z:#6f6a5e;--gold:#c99a2e;--shadow:0 1px 2px rgba(60,50,30,.06),0 4px 14px rgba(60,50,30,.06)}
+@media (prefers-color-scheme:dark){:root{--bg:#171815;--card:#23241f;--ink:#ece8de;--muted:#9c9686;--line:#38392f;--g:#7fb48a;--g2:#26362a;--g3:#3d5a43;--w:#e08660;--w2:#3c2920;--w3:#6c3f2c;--z:#8a8577;--shadow:none}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:16px;line-height:1.45}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+input,textarea{font:inherit;font-size:16px;color:var(--ink)}
+#app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top));background:var(--bg);border-bottom:1px solid var(--line)}
+.icon{min-width:48px;height:48px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);padding:0 10px;font-size:15px;border:1px solid var(--line)}
+.cupbtn{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;height:54px;border-radius:14px;background:var(--g);color:#fff}
+.cupbtn small{opacity:.85;font-size:12px;max-width:92%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cupbtn b{font-size:21px;letter-spacing:.04em}
+.title{flex:1;text-align:center;font-weight:600}
+.card{background:var(--card);margin:12px;border-radius:16px;padding:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.card h2{font-size:14px;margin:0 0 10px;color:var(--muted);font-weight:600;letter-spacing:.15em}
+.q+.q{margin-top:14px}
+.ql{font-size:15px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ql small{color:var(--muted);font-size:12px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
+.seg button{height:46px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:15px}
+.seg button.on{color:#fff}
+.seg button.on.pos{background:var(--g);border-color:var(--g)}
+.seg button.on.neg{background:var(--w);border-color:var(--w)}
+.seg button.on.zero{background:var(--z);border-color:var(--z)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:42px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-size:15px;display:inline-flex;align-items:center;gap:6px}
+.chip em{font-style:normal;font-size:12px;font-weight:600}
+.chip.pos.l1{background:var(--g2);border-color:var(--g3)}.chip.pos.l2{background:var(--g);color:#fff;border-color:var(--g)}
+.chip.neg.l1{background:var(--w2);border-color:var(--w3)}.chip.neg.l2{background:var(--w);color:#fff;border-color:var(--w)}
+.chip.add{border-style:dashed;color:var(--muted)}
+.hint{font-size:12px;color:var(--muted);margin:8px 0 0}
+details.hint summary{cursor:pointer}
+details.hint p{margin:4px 0}
+.like{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.like button{height:64px;border-radius:14px;border:1px solid var(--line);background:var(--bg);font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.like button span{font-size:24px;line-height:1}
+.like button.on{border-color:var(--g);background:var(--g2);box-shadow:inset 0 0 0 1.5px var(--g)}
+.like button.on.no{border-color:var(--w);background:var(--w2);box-shadow:inset 0 0 0 1.5px var(--w)}
+.meta{display:flex;align-items:center;gap:10px;margin:12px 12px 0;font-size:14px;color:var(--muted)}
+.meta input{flex:1;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);padding:0 12px}
+.meta span{color:var(--ink)}
+textarea{width:100%;min-height:84px;border-radius:12px;border:1px solid var(--line);background:var(--bg);padding:10px 12px;resize:vertical}
+.phr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.phr button{font-size:13px;padding:6px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.savest{text-align:center;font-size:12px;color:var(--muted);min-height:18px;margin:4px 0 8px}
+.strip{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+.strip-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:4px}
+.cups{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.cups::-webkit-scrollbar{display:none}
+.cup{flex:0 0 46px;height:54px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600;font-size:16px;line-height:1.1}
+.cup i,.gcell i{font-style:normal;font-size:12px;height:14px;line-height:14px}
+.cup.done,.gcell.done{background:var(--g2);border-color:var(--g3)}
+.cup.cur{background:var(--g);color:#fff;border-color:var(--g)}
+.nav{width:34px;height:54px;font-size:26px;color:var(--muted)}
+#modal{position:fixed;inset:0;z-index:20;background:rgba(20,18,12,.45);display:flex;align-items:flex-end;justify-content:center}
+#modal[hidden]{display:none}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+.sheet h3{margin:0 0 12px;font-size:17px;display:flex;justify-content:space-between;align-items:center}
+.sheet h3 button{font-size:22px;color:var(--muted);width:40px;height:40px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.gcell{height:60px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:18px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.gcell.cur{outline:2.5px solid var(--g);outline-offset:1px}
+.legend{font-size:12px;color:var(--muted);margin:10px 0 0}
+.mitem{display:block;width:100%;text-align:left;padding:14px 4px;border-bottom:1px solid var(--line);font-size:16px}
+.mitem:last-child{border:0}
+.btn{display:block;width:100%;height:52px;border-radius:14px;background:var(--g);color:#fff;font-size:17px;font-weight:600}
+.btn.ghost{background:var(--bg);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.btn.warn{background:var(--w)}
+.btn+.btn{margin-top:8px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.field input[type=text]{width:100%;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);padding:0 14px}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper .qk{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stepper .qk button,.pm{height:46px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.stepper .qk button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.pm{width:46px;font-size:20px}
+.num{min-width:44px;text-align:center;font-size:22px;font-weight:700}
+.toggle{display:flex;align-items:center;gap:10px;font-size:15px;padding:6px 0}
+.toggle input{width:22px;height:22px;accent-color:var(--g)}
+.brand{padding:28px 16px 4px}
+.brand h1{margin:0;font-size:26px;letter-spacing:.08em}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.recent button{display:flex;justify-content:space-between;width:100%;padding:12px 2px;border-bottom:1px solid var(--line);font-size:15px}
+.recent button:last-child{border:0}
+.recent small{color:var(--muted)}
+.banner{margin:12px;padding:10px 12px;border-radius:12px;background:var(--w2);color:var(--w);font-size:13px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 12px 0;background:var(--card);padding:4px;border-radius:14px;border:1px solid var(--line)}
+.tabs button{height:42px;border-radius:10px;font-size:15px}
+.tabs button.on{background:var(--g);color:#fff}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot{height:76px;border-radius:14px;border:1.5px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.slot b{font-size:22px;color:var(--ink)}
+.slot.fill{border-style:solid;border-color:var(--gold);background:var(--bg)}
+.cands{display:flex;flex-wrap:wrap;gap:8px}
+.cand{min-width:52px;height:46px;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-weight:600;font-size:16px}
+.cand.picked{opacity:.35}
+.sub{font-size:13px;color:var(--muted);margin:12px 0 6px}
+.tw{overflow-x:auto;margin:0 -6px;padding:0 6px}
+table{border-collapse:separate;border-spacing:3px;font-size:13px;width:100%}
+th{font-weight:600;color:var(--muted);font-size:12px;padding:4px 2px;white-space:nowrap}
+td{text-align:center;padding:7px 4px;border-radius:6px;white-space:nowrap;background:var(--bg)}
+td.cn{font-weight:700;font-size:15px;background:transparent;position:sticky;left:0;background:var(--card)}
+tr[data-act]{cursor:pointer}
+.hp0,.hn0{color:var(--muted)}
+.hp1{background:var(--g2)}.hp2{background:var(--g3)}.hp3{background:var(--g);color:#fff}
+.hn1{background:var(--w2)}.hn2{background:var(--w3)}.hn3{background:var(--w);color:#fff}
+td.e{color:var(--line)}
+td.sc{text-align:left;white-space:normal;min-width:110px;font-size:12px;background:transparent}
+td.sc b{color:var(--g)}
+.sorts{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px}
+.sorts button{flex:0 0 auto;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-size:13px}
+.sorts button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.rk{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.rk:last-child{border:0}
+.rk .no{width:54px;height:54px;flex:0 0 54px;border-radius:14px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:18px;line-height:1.1}
+.rk .no small{font-size:11px;font-weight:500;color:var(--muted)}
+.rk .bd{flex:1;min-width:0;font-size:13px;color:var(--muted)}
+.rk .bd b{color:var(--ink);font-size:15px}
+.rk .pts{font-weight:700;font-size:18px;color:var(--gold);text-align:right}
+.rk .pts small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.mem{display:flex;justify-content:space-between;padding:8px 0;font-size:15px;border-bottom:1px solid var(--line)}
+.mem:last-child{border:0}
+.mem small{color:var(--muted)}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:16px 0}
+.code{font-size:34px;font-weight:800;letter-spacing:.25em;text-align:center;margin:6px 0}
+#qr{display:flex;justify-content:center;margin:8px 0}
+#qr img,#qr canvas{border:10px solid #fff;border-radius:10px}
+.link{font-size:12px;color:var(--muted);word-break:break-all;text-align:center;margin-bottom:12px}
+#toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--card);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;white-space:nowrap}
+#toast.show{opacity:1}
+.center{padding:60px 20px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="app"><div class="center">載入中…</div></div>
+<div id="modal" hidden></div>
+<div id="toast"></div>
+<script type="module">
+// ===== 設定 =====
+const CFG = {
+  apiKey: "AIzaSyDeBdKdfg0r8TWXMx8qcLjN0RnO71hIj9k",
+  authDomain: "tea-rating-7a3ae.firebaseapp.com",
+  projectId: "tea-rating-7a3ae",
+  storageBucket: "tea-rating-7a3ae.firebasestorage.app",
+  messagingSenderId: "1010777730664",
+  appId: "1:1010777730664:web:c2ef8edeb7f2b9759215dd"
+};
+const P = new URLSearchParams(location.search);
+const MOCK = P.has('mock');
+
+const SCENTS = ['綠豆','蛋白','新栽','奶香','花香','果香','清香','蜜香','焙火香'];
+const DEFECTS = [
+  {k:'菁味', l:'菁味／生', d:'草青、生澀，發酵或走水不足'},
+  {k:'悶味', l:'悶味', d:'不清爽，像悶過頭的熟味'},
+  {k:'水味', l:'水味', d:'湯淡，喝起來像水'},
+  {k:'火味', l:'火味太重', d:'焙火味蓋過茶本身的香'},
+  {k:'雜味', l:'雜味', d:'其他不該有的味道'},
+];
+const AROMA=['無','淡','中','濃'], BSA=['無','微','中','很'], BODY=['普通','飽滿'], AFT=['無','微','明顯'], AFT2=['無','有','明顯'];
+const SECTIONS = [
+  {t:'聞香', q:[{f:'aroma',l:'香氣強度',v:AROMA,k:'pos'}], scents:true},
+  {t:'滋味', q:[{f:'bitter',l:'苦',v:BSA,k:'neg'},{f:'astr',l:'澀',v:BSA,k:'neg'},{f:'sweet',l:'甜',v:BSA,k:'pos'},{f:'body',l:'湯感',v:BODY,k:'pos',s:'喝起來空、淡的，請到缺點勾「水味」'}]},
+  {t:'餘韻', q:[{f:'huigan',l:'回甘',v:AFT,k:'pos'},{f:'huixiang',l:'回香',v:AFT2,k:'pos',s:'吞下後香氣回來'},{f:'shengjin',l:'生津',v:AFT2,k:'pos'}]},
+];
+const LIKES = [['love','❤️','喜歡'],['ok','👍','還可以'],['no','✕','不愛']];
+const LIKE_EMO = {love:'❤️', ok:'👍', no:'✕'};
+const MEDAL = ['🥇','🥈','🥉'];
+const PHRASES = ['想買','回沖再試','香氣持久','入口滑順','跟前一杯很像'];
+const COLS = [['aroma','香',AROMA,'p'],['bitter','苦',BSA,'n'],['astr','澀',BSA,'n'],['sweet','甜',BSA,'p'],['body','湯',BODY,'p'],['huigan','甘',AFT,'p'],['huixiang','回香',AFT2,'p'],['shengjin','津',AFT2,'p']];
+
+// ===== 小工具 =====
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v) } catch { return d } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)) } catch {} }
+};
+const isObj = o => o && typeof o === 'object' && !Array.isArray(o);
+const deepMerge = (a, b) => { const o = {...a}; for (const k in b) o[k] = isObj(b[k]) && isObj(a[k]) ? deepMerge(a[k], b[k]) : b[k]; return o };
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800) }
+const today = () => { const d = new Date(); return `${d.getMonth()+1}/${d.getDate()}` };
+
+// ===== 資料層：模擬（測試用）=====
+function makeMock(){
+  const uid = P.get('uid') || LS.get('tea:mockuid', null) || (() => { const u = 'u' + Math.random().toString(36).slice(2, 8); LS.set('tea:mockuid', u); return u })();
+  const K = p => 'mock:' + p;
+  const subs = new Set();
+  const rd = p => LS.get(K(p), null);
+  const fire = p => subs.forEach(s => { if (s.exact ? p === s.pre : p.startsWith(s.pre)) s.fn() });
+  const wr = (p, v) => { LS.set(K(p), v); fire(p) };
+  addEventListener('storage', e => { if (e.key && e.key.startsWith('mock:')) fire(e.key.slice(5)) });
+  const list = pre => { const o = {}; for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k.startsWith(K(pre))){ const id = k.slice(K(pre).length); if (!id.includes('/')) o[id] = JSON.parse(localStorage.getItem(k)) } } return o };
+  const watch = (pre, fn, exact) => { const s = {pre, fn, exact}; subs.add(s); setTimeout(fn); return () => subs.delete(s) };
+  return {
+    uid, mock: true,
+    async getSession(c){ return rd('sessions/' + c) },
+    async createSession(c, d){ wr('sessions/' + c, d) },
+    async updateSession(c, p){ wr('sessions/' + c, deepMerge(rd('sessions/' + c) || {}, p)) },
+    watchSession(c, cb){ return watch('sessions/' + c, () => cb(rd('sessions/' + c)), true) },
+    async setMember(c, u, d){ wr(`sessions/${c}/members/${u}`, d) },
+    watchMembers(c, cb){ const pre = `sessions/${c}/members/`; return watch(pre, () => cb(list(pre))) },
+    async savePlayer(c, u, d){ wr(`sessions/${c}/players/${u}`, d) },
+    async loadPlayer(c, u){ return rd(`sessions/${c}/players/${u}`) },
+    watchPlayers(c, cb){ const pre = `sessions/${c}/players/`; return watch(pre, () => cb(list(pre))) },
+  };
+}
+
+// ===== 資料層：Firebase =====
+async function makeFirebase(){
+  const B = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const [{initializeApp}, {getAuth, signInAnonymously, onAuthStateChanged}, fs] = await Promise.all([
+    import(B + 'firebase-app.js'), import(B + 'firebase-auth.js'), import(B + 'firebase-firestore.js')
+  ]);
+  const app = initializeApp(CFG);
+  const auth = getAuth(app);
+  let db;
+  try { db = fs.initializeFirestore(app, {localCache: fs.persistentLocalCache({tabManager: fs.persistentMultipleTabManager()})}) }
+  catch { db = fs.getFirestore(app) }
+  const user = await new Promise((res, rej) => {
+    const off = onAuthStateChanged(auth, u => { if (u){ off(); res(u) } else signInAnonymously(auth).catch(rej) });
+  });
+  const {doc, getDoc, setDoc, onSnapshot, collection} = fs;
+  const sd = c => doc(db, 'sessions', c);
+  const mapCol = snap => { const o = {}; snap.forEach(d => o[d.id] = d.data()); return o };
+  const warn = e => console.warn(e);
+  return {
+    uid: user.uid,
+    async getSession(c){ const s = await getDoc(sd(c)); return s.exists() ? s.data() : null },
+    createSession(c, d){ return setDoc(sd(c), d) },
+    updateSession(c, p){ return setDoc(sd(c), p, {merge: true}) },
+    watchSession(c, cb){ return onSnapshot(sd(c), s => cb(s.exists() ? s.data() : null), warn) },
+    setMember(c, u, d){ return setDoc(doc(db, 'sessions', c, 'members', u), d) },
+    watchMembers(c, cb){ return onSnapshot(collection(db, 'sessions', c, 'members'), s => cb(mapCol(s)), warn) },
+    savePlayer(c, u, d){ return setDoc(doc(db, 'sessions', c, 'players', u), d) },
+    async loadPlayer(c, u){ const s = await getDoc(doc(db, 'sessions', c, 'players', u)); return s.exists() ? s.data() : null },
+    watchPlayers(c, cb){ return onSnapshot(collection(db, 'sessions', c, 'players'), s => cb(mapCol(s)), warn) },
+  };
+}
+
+// ===== 狀態 =====
+const S = {
+  api: null, name: LS.get('tea:name', ''), code: null, sess: null,
+  members: {}, me: {ratings: {}, top: []}, players: {},
+  cur: 1, view: 'loading', tab: 'mine', sort: 'cup', filter: null,
+  unsubs: [], playersUnsub: null, pendingCode: null, newCups: 20,
+};
+const isHost = () => S.sess && S.api && S.sess.hostUid === S.api.uid;
+const cupsArr = () => Array.from({length: S.sess?.cups || 0}, (_, i) => i + 1);
+const R = n => S.me.ratings[String(n)] || {};
+function rated(r){
+  if (!r) return false;
+  for (const k in r){
+    if (k === 't') continue;
+    const v = r[k];
+    if (k === 'note' ? String(v || '').trim() : isObj(v) ? Object.keys(v).length : v != null) return true;
+  }
+  return false;
+}
+const doneCount = () => cupsArr().filter(n => rated(R(n))).length;
+const linkFor = code => {
+  const u = new URL(location.origin + location.pathname);
+  u.searchParams.set('s', code);
+  if (MOCK) u.searchParams.set('mock', '1');
+  return u.toString();
+};
+function setUrl(code){
+  const u = new URL(location.href);
+  if (code) u.searchParams.set('s', code); else u.searchParams.delete('s');
+  history.replaceState(null, '', u);
+}
+
+// ===== 儲存 =====
+let saveT, lastDone = -1, saveSeq = 0;
+function setSave(t){ const el = $('#savest'); if (el) el.textContent = t }
+function save(){
+  clearTimeout(saveT);
+  setSave('儲存中…');
+  saveT = setTimeout(async () => {
+    const seq = ++saveSeq;
+    const offT = setTimeout(() => { if (seq === saveSeq) setSave('目前離線，已存在手機，連上網路後會自動同步') }, 3000);
+    try {
+      const d = doneCount();
+      const jobs = [S.api.savePlayer(S.code, S.api.uid, {name: S.name, ratings: S.me.ratings, top: S.me.top, t: Date.now()})];
+      if (d !== lastDone){ lastDone = d; jobs.push(S.api.setMember(S.code, S.api.uid, {name: S.name, done: d, t: Date.now()})) }
+      await Promise.all(jobs);
+      clearTimeout(offT);
+      if (seq === saveSeq) setSave('已同步 ✓');
+    } catch (e){ clearTimeout(offT); console.warn(e); setSave('同步失敗，稍後會再試') }
+  }, 500);
+}
+function upd(fn){
+  const n = String(S.cur);
+  const r = S.me.ratings[n] || (S.me.ratings[n] = {});
+  fn(r); r.t = Date.now();
+  save();
+}
+
+// ===== 場次 =====
+function addRecent(code, name){
+  const list = LS.get('tea:recent', []).filter(x => x.code !== code);
+  list.unshift({code, name, at: Date.now()});
+  LS.set('tea:recent', list.slice(0, 8));
+}
+function closeSession(){
+  S.unsubs.forEach(f => f()); S.unsubs = [];
+  if (S.playersUnsub){ S.playersUnsub(); S.playersUnsub = null }
+  S.code = null; S.sess = null; S.members = {}; S.players = {}; S.me = {ratings: {}, top: []}; lastDone = -1;
+}
+async function openSession(code){
+  code = String(code || '').trim().toUpperCase();
+  if (!code) return;
+  if (!S.name){ S.pendingCode = code; S.view = 'name'; return render() }
+  S.view = 'loading'; render();
+  let sess;
+  try { sess = await S.api.getSession(code) } catch (e){ console.warn(e) }
+  if (!sess){ setUrl(null); S.view = 'home'; render(); return toast('找不到這個場次代碼') }
+  closeSession();
+  S.code = code; S.sess = sess;
+  try { const p = await S.api.loadPlayer(code, S.api.uid); if (p) S.me = {ratings: p.ratings || {}, top: p.top || []} } catch (e){ console.warn(e) }
+  S.cur = Math.min(LS.get('tea:cur:' + code, 1), sess.cups) || 1;
+  lastDone = doneCount();
+  S.api.setMember(code, S.api.uid, {name: S.name, done: lastDone, t: Date.now()}).catch(console.warn);
+  addRecent(code, sess.name);
+  setUrl(code);
+  S.unsubs.push(S.api.watchSession(code, s => {
+    if (!s) return;
+    S.sess = s;
+    if (s.revealed && !S.playersUnsub) S.playersUnsub = S.api.watchPlayers(code, m => { S.players = m; if (S.view === 'over') softRender() });
+    softRender();
+  }));
+  S.unsubs.push(S.api.watchMembers(code, m => { S.members = m; if (S.view === 'over') softRender() }));
+  S.view = 'rate'; render();
+}
+async function createSession(){
+  const name = ($('#nsName')?.value || '').trim() || `${today()} 品茶`;
+  const cups = Math.max(1, Math.min(60, S.newCups));
+  const blind = !!$('#nsBlind')?.checked;
+  const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let code;
+  for (let i = 0; i < 6; i++){
+    code = Array.from({length: 6}, () => A[Math.floor(Math.random() * A.length)]).join('');
+    try { if (!(await S.api.getSession(code))) break } catch { break }
+  }
+  try {
+    await S.api.createSession(code, {name, cups, blind, revealed: false, hostUid: S.api.uid, hostName: S.name, cupInfo: {}, createdAt: Date.now()});
+  } catch (e){ console.warn(e); return toast('建立失敗，請檢查網路') }
+  await openSession(code);
+  openShare();
+}
+
+// ===== 畫面 =====
+let lastView = null;
+function render(){
+  const app = $('#app');
+  const a = document.activeElement;
+  const keep = a && a.id && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT') ? {id: a.id, s: a.selectionStart, e: a.selectionEnd} : null;
+  const v = S.view;
+  app.innerHTML = v === 'rate' ? viewRate() : v === 'over' ? viewOver() : v === 'name' ? viewName() : v === 'home' ? viewHome() : '<div class="center">載入中…</div>';
+  if (keep){ const el = document.getElementById(keep.id); if (el){ el.focus({preventScroll: true}); try { el.setSelectionRange(keep.s, keep.e) } catch {} } }
+  if (v === 'rate'){ const c = document.querySelector('.cup.cur'); c && c.scrollIntoView({inline: 'center', block: 'nearest'}) }
+  if (v !== lastView){ window.scrollTo(0, 0); lastView = v }
+}
+// 遠端更新時，正在打字就先不重畫
+let deferred = false, softT;
+function softRender(){
+  // 延遲一下，避免剛好點按鈕時畫面被換掉、點擊失效
+  clearTimeout(softT);
+  softT = setTimeout(() => {
+    const a = document.activeElement;
+    if (a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT')){ deferred = true; return }
+    render();
+  }, 350);
+}
+document.addEventListener('focusout', () => { if (deferred) setTimeout(() => { const a = document.activeElement; if (!(a && (a.tagName === 'TEXTAREA' || a.tagName === 'INPUT'))){ deferred = false; render() } }, 250) });
+
+function viewName(){
+  return `<div class="brand"><h1>品茶評分</h1><p>先告訴大家你是誰</p></div>
+  <div class="card">
+    <div class="field"><label>你的名字</label><input type="text" id="nmIn" maxlength="12" placeholder="例：Gini" value="${esc(S.name)}"></div>
+    <button class="btn" data-act="saveName">開始</button>
+  </div>`;
+}
+
+function viewHome(){
+  const recent = LS.get('tea:recent', []);
+  const qk = [10, 15, 20, 25];
+  return `${MOCK ? '<div class="banner">模擬模式：資料只存在這台裝置，不會上傳</div>' : ''}
+  <div class="brand"><h1>品茶評分</h1><p>${S.name ? `嗨，${esc(S.name)}　<button data-act="rename" style="color:var(--g);font-size:14px">改名字</button>` : ''}</p></div>
+  <div class="card">
+    <h2>開新場次</h2>
+    <div class="field"><label>場次名稱</label><input type="text" id="nsName" placeholder="${today()} 品茶" maxlength="30"></div>
+    <div class="field"><label>今天喝幾杯（之後還能加）</label>
+      <div class="stepper">
+        <button class="pm" data-act="nc" data-d="-1">－</button>
+        <div class="num" id="ncNum">${S.newCups}</div>
+        <button class="pm" data-act="nc" data-d="1">＋</button>
+        <div class="qk">${qk.map(n => `<button class="${S.newCups === n ? 'on' : ''}" data-act="ncSet" data-n="${n}">${n}</button>`).join('')}</div>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="nsBlind"> 盲品模式（先藏起製作日期，揭曉後才顯示）</label>
+    <div style="height:8px"></div>
+    <button class="btn" data-act="create">建立並邀請朋友</button>
+  </div>
+  <div class="card">
+    <h2>加入朋友的場次</h2>
+    <div class="field"><input type="text" id="jnCode" placeholder="輸入 6 碼代碼" maxlength="6" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.2em"></div>
+    <button class="btn ghost" data-act="join">加入</button>
+  </div>
+  ${recent.length ? `<div class="card recent"><h2>最近的場次</h2>${recent.map(x => `<button data-act="open" data-code="${esc(x.code)}"><span>${esc(x.name)}</span><small>${esc(x.code)}</small></button>`).join('')}</div>` : ''}`;
+}
+
+function seg(r, q){
+  const v = r[q.f];
+  return `<div class="q"><div class="ql"><span>${q.l}</span>${q.s ? `<small>${q.s}</small>` : ''}</div>
+  <div class="seg">${q.v.map((lab, i) => `<button class="${v === i ? 'on ' + (i === 0 && !(q.f === 'body') ? 'zero' : q.k) : ''}" data-act="seg" data-f="${q.f}" data-v="${i}">${lab}</button>`).join('')}</div></div>`;
+}
+function chip(map, key, label, kind, f){
+  const lv = (map || {})[key] || 0;
+  const sfx = lv ? (kind === 'pos' ? ['', '淡', '濃'] : ['', '微', '明顯'])[lv] : '';
+  return `<button class="chip ${kind} l${lv}" data-act="chip" data-f="${f}" data-k="${esc(key)}">${esc(label)}${sfx ? `<em>${sfx}</em>` : ''}</button>`;
+}
+function allScents(){
+  const set = new Set(SCENTS);
+  Object.values(S.me.ratings).forEach(r => Object.keys(r.scents || {}).forEach(k => set.add(k)));
+  return [...set];
+}
+
+function viewRate(){
+  const n = S.cur, r = R(n), s = S.sess, info = (s.cupInfo || {})[n] || {};
+  const blindHide = s.blind && !s.revealed && !isHost();
+  const meta = isHost()
+    ? `<span style="color:var(--muted)">製作日期</span><input id="cupdate" data-n="${n}" value="${esc(info.date || '')}" placeholder="例：10/28 冬茶">`
+    : blindHide ? `🙈 盲品中，揭曉後才會顯示製作日期` : `製作日期　<span>${esc(info.date || '未填')}</span>`;
+  const secs = SECTIONS.map(sec => `<section class="card"><h2>${sec.t}</h2>
+    ${sec.q.map(q => seg(r, q)).join('')}
+    ${sec.scents ? `<div class="q"><div class="ql"><span>香型</span><small>點一下＝淡，兩下＝濃，三下取消</small></div>
+      <div class="chips">${allScents().map(k => chip(r.scents, k, k, 'pos', 'scents')).join('')}<button class="chip add" data-act="addScent">＋ 自訂</button></div></div>` : ''}
+  </section>`).join('');
+  return `<header class="top">
+    <button class="icon" data-act="menu" aria-label="選單">☰</button>
+    <button class="cupbtn" data-act="grid"><small>${esc(s.name)}</small><b>第 ${n} 杯 ▾</b></button>
+    <button class="icon" data-act="over">總覽</button>
+  </header>
+  <main id="rate">
+    <div class="meta">${meta}</div>
+    <section class="card"><h2>整體感覺</h2>
+      <div class="like">${LIKES.map(([k, e, l]) => `<button class="${r.like === k ? 'on ' + k : ''}" data-act="like" data-v="${k}"><span>${e}</span>${l}</button>`).join('')}</div>
+    </section>
+    ${secs}
+    <section class="card"><h2>缺點</h2>
+      <div class="chips">${DEFECTS.map(d => chip(r.defects, d.k, d.l, 'neg', 'defects')).join('')}</div>
+      <details class="hint"><summary>點一下＝微，兩下＝明顯，三下取消（看說明）</summary>${DEFECTS.map(d => `<p><b>${d.l}</b>：${d.d}</p>`).join('')}</details>
+    </section>
+    <section class="card"><h2>備註</h2>
+      <div class="phr">${PHRASES.map(p => `<button data-act="phrase" data-p="${p}">＋${p}</button>`).join('')}</div>
+      <textarea id="note" placeholder="想到什麼就寫，也可以用鍵盤的語音輸入">${esc(r.note || '')}</textarea>
+    </section>
+    <div class="savest" id="savest"></div>
+  </main>
+  <nav class="strip"><div class="strip-in">
+    <button class="nav" data-act="prev" aria-label="上一杯">‹</button>
+    <div class="cups">${cupsArr().map(i => { const ri = R(i); return `<button class="cup ${i === n ? 'cur' : ''} ${rated(ri) ? 'done' : ''}" data-act="go" data-n="${i}">${i}<i>${LIKE_EMO[ri.like] || ''}</i></button>` }).join('')}</div>
+    <button class="nav" data-act="next" aria-label="下一杯">›</button>
+  </div></nav>`;
+}
+
+function cellFor(r, c){
+  const [f, , labs, k] = c;
+  const v = r[f];
+  if (v == null) return '<td class="e">·</td>';
+  const lv = f === 'body' ? v * 2 : labs.length === 3 ? [0, 2, 3][v] : v;
+  return `<td class="h${k}${lv}">${labs[v]}</td>`;
+}
+function sortedCups(){
+  const arr = cupsArr();
+  const top = S.me.top.map(Number);
+  const likeScore = r => ({love: 3, ok: 2, no: 0})[r.like] ?? 1;
+  const num = (r, f) => r[f] ?? -1;
+  const by = {
+    cup: () => 0,
+    like: (a, b) => { const ta = top.indexOf(a), tb = top.indexOf(b); if (ta !== tb) return (ta < 0 ? 9 : ta) - (tb < 0 ? 9 : tb); return likeScore(R(b)) - likeScore(R(a)) },
+    aroma: (a, b) => num(R(b), 'aroma') - num(R(a), 'aroma'),
+    clean: (a, b) => { const f = r => r.bitter == null && r.astr == null ? 99 : (r.bitter || 0) + (r.astr || 0); return f(R(a)) - f(R(b)) },
+    after: (a, b) => { const f = r => (r.huigan || 0) + (r.huixiang || 0) + (r.shengjin || 0); return f(R(b)) - f(R(a)) },
+  }[S.sort] || (() => 0);
+  let list = arr.slice().sort((a, b) => by(a, b) || a - b);
+  if (S.filter) list = list.filter(n => (R(n).scents || {})[S.filter]);
+  return list;
+}
+
+function viewMine(){
+  const top = S.me.top.map(Number);
+  const loves = cupsArr().filter(n => R(n).like === 'love');
+  const oks = cupsArr().filter(n => R(n).like === 'ok');
+  const slots = [0, 1, 2].map(i => top[i] ? `<button class="slot fill" data-act="unpick" data-n="${top[i]}">${MEDAL[i]}<b>${top[i]}</b>點一下移除</button>` : `<div class="slot">${MEDAL[i]}<span>還沒選</span></div>`).join('');
+  const cand = list => list.map(n => `<button class="cand ${top.includes(n) ? 'picked' : ''}" data-act="pick" data-n="${n}">${n}</button>`).join('');
+  const scentsUsed = [...new Set(cupsArr().flatMap(n => Object.keys(R(n).scents || {})))];
+  const sorts = [['cup', '杯號'], ['like', '喜好'], ['aroma', '香氣濃'], ['clean', '苦澀少'], ['after', '餘韻強']];
+  const rows = sortedCups().map(n => {
+    const r = R(n), ti = top.indexOf(n);
+    const defs = Object.entries(r.defects || {});
+    const maxD = defs.reduce((m, [, v]) => Math.max(m, v), 0);
+    const sc = Object.entries(r.scents || {}).map(([k, v]) => v === 2 ? `<b>${esc(k)}</b>` : esc(k)).join('、');
+    return `<tr data-act="go" data-n="${n}"><td class="cn">${n}${ti >= 0 ? MEDAL[ti] : ''}</td>
+      <td>${LIKE_EMO[r.like] || '<span style="color:var(--line)">·</span>'}</td>
+      ${COLS.map(c => cellFor(r, c)).join('')}
+      <td class="${defs.length ? 'hn' + (maxD === 2 ? 3 : 1) : 'e'}">${defs.length ? defs.map(([k]) => k[0]).join('') : '·'}</td>
+      <td class="sc">${sc}</td></tr>`;
+  }).join('');
+  return `<section class="card"><h2>我的前三名</h2>
+    <div class="slots">${slots}</div>
+    ${loves.length || oks.length ? `
+      ${loves.length ? `<div class="sub">❤️ 喜歡的杯子，依序點選第一、二、三名</div><div class="cands">${cand(loves)}</div>` : ''}
+      ${oks.length ? `<div class="sub">👍 還可以</div><div class="cands">${cand(oks)}</div>` : ''}`
+      : '<div class="empty">在每一杯點「❤️ 喜歡」或「👍 還可以」，這裡就會出現可以選的杯子</div>'}
+  </section>
+  <section class="card"><h2>每杯比一比</h2>
+    <div class="sorts">${sorts.map(([k, l]) => `<button class="${S.sort === k ? 'on' : ''}" data-act="sort" data-k="${k}">${l}</button>`).join('')}</div>
+    ${scentsUsed.length ? `<div class="sorts"><button class="${!S.filter ? 'on' : ''}" data-act="filter" data-k="">全部香型</button>${scentsUsed.map(k => `<button class="${S.filter === k ? 'on' : ''}" data-act="filter" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>` : ''}
+    <div class="tw"><table>
+      <thead><tr><th>杯</th><th>感覺</th>${COLS.map(c => `<th>${c[1]}</th>`).join('')}<th>缺點</th><th style="text-align:left">香型</th></tr></thead>
+      <tbody>${rows || ''}</tbody>
+    </table></div>
+    ${!rows ? '<div class="empty">沒有符合的杯子</div>' : ''}
+    <p class="hint">點任一列可以回到那一杯。綠色越深越好，橘色越深越扣分。</p>
+  </section>`;
+}
+
+function crowd(){
+  const players = Object.values(S.players);
+  const rows = cupsArr().map(n => {
+    const k = String(n);
+    let pts = 0, love = 0, ok = 0, no = 0, raters = 0;
+    const medals = [], sc = {}, likes = [];
+    players.forEach(p => {
+      const r = (p.ratings || {})[k];
+      const ti = (p.top || []).map(String).indexOf(k);
+      if (ti >= 0 && ti < 3){ pts += 3 - ti; medals.push(MEDAL[ti] + esc(p.name)) }
+      if (r && rated(r)){
+        raters++;
+        if (r.like === 'love') love++; else if (r.like === 'ok') ok++; else if (r.like === 'no') no++;
+        Object.keys(r.scents || {}).forEach(s => sc[s] = (sc[s] || 0) + 1);
+      }
+      likes.push([p.name, r?.like, ti]);
+    });
+    const consensus = Object.entries(sc).filter(([, c]) => raters && c >= Math.max(2, Math.ceil(raters / 2))).sort((a, b) => b[1] - a[1]).map(([s]) => s);
+    return {n, pts, love, ok, no, raters, medals, consensus, likes};
+  });
+  return {players, rows};
+}
+
+function viewAll(){
+  const s = S.sess, mem = Object.entries(S.members);
+  const total = s.cups;
+  const memList = mem.length ? mem.sort((a, b) => (a[1].name || '').localeCompare(b[1].name || '')).map(([u, m]) => `<div class="mem"><span>${esc(m.name)}${u === s.hostUid ? ' <small>主揪</small>' : ''}${u === S.api.uid ? ' <small>（你）</small>' : ''}</span><small>已評 ${m.done || 0} / ${total} 杯</small></div>`).join('') : '<div class="empty">還沒有人加入</div>';
+  if (!s.revealed){
+    return `<section class="card"><h2>參加的人（${mem.length}）</h2>${memList}</section>
+    <section class="card">
+      ${isHost()
+        ? `<p style="margin:0 0 12px;font-size:14px;color:var(--muted)">揭曉之前，每個人只看得到自己的評分。大家都評完之後，按下面的按鈕公布所有人的結果。</p><button class="btn" data-act="reveal">揭曉結果</button>`
+        : `<div class="empty">等主揪按「揭曉」之後，<br>這裡會顯示所有人的結果</div>`}
+    </section>`;
+  }
+  const {players, rows} = crowd();
+  const rank = rows.filter(x => x.pts || x.love).sort((a, b) => b.pts - a.pts || b.love - a.love || b.ok - a.ok || a.n - b.n);
+  const contro = rows.filter(x => x.love && x.no);
+  const rkHtml = rank.length ? rank.map((x, i) => `<div class="rk" data-act="go" data-n="${x.n}">
+      <div class="no"><small>第 ${i + 1} 名</small>${x.n}</div>
+      <div class="bd"><b>第 ${x.n} 杯</b>${(s.cupInfo || {})[x.n]?.date ? `　${esc(s.cupInfo[x.n].date)}` : ''}<br>
+        ❤️ ${x.love}　👍 ${x.ok}　✕ ${x.no}${x.consensus.length ? `<br>大家都聞到：${x.consensus.map(esc).join('、')}` : ''}
+        ${x.medals.length ? `<br>${x.medals.join('　')}` : ''}</div>
+      <div class="pts">${x.pts}<small>分</small></div></div>`).join('') : '<div class="empty">還沒有人選前三名或按 ❤️</div>';
+  const names = players.map(p => p.name);
+  const detail = `<div class="tw"><table><thead><tr><th>杯</th>${names.map(nm => `<th>${esc(nm)}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map(x => `<tr data-act="go" data-n="${x.n}"><td class="cn">${x.n}</td>${x.likes.map(([, l, ti]) => `<td>${ti >= 0 && ti < 3 ? MEDAL[ti] : ''}${LIKE_EMO[l] || '<span style="color:var(--line)">·</span>'}</td>`).join('')}</tr>`).join('')}
+  </tbody></table></div>`;
+  return `<section class="card"><h2>綜合排名</h2>${rkHtml}<p class="hint">🥇 3 分、🥈 2 分、🥉 1 分，同分看 ❤️ 數</p></section>
+    ${contro.length ? `<section class="card"><h2>爭議杯</h2><p style="margin:0;font-size:15px">有人 ❤️ 也有人 ✕：${contro.map(x => `<b>第 ${x.n} 杯</b>`).join('、')}</p></section>` : ''}
+    <section class="card"><h2>每個人的感覺</h2>${detail}</section>
+    <section class="card"><h2>參加的人（${mem.length}）</h2>${memList}</section>`;
+}
+
+function viewOver(){
+  return `<header class="top">
+    <button class="icon" data-act="back">‹ 評分</button>
+    <div class="title">總覽</div>
+    <button class="icon" data-act="menu" aria-label="選單">☰</button>
+  </header>
+  <div class="tabs"><button class="${S.tab === 'mine' ? 'on' : ''}" data-act="tab" data-k="mine">我的</button><button class="${S.tab === 'all' ? 'on' : ''}" data-act="tab" data-k="all">大家${S.sess.revealed ? '' : '（未揭曉）'}</button></div>
+  ${S.tab === 'mine' ? viewMine() : viewAll()}`;
+}
+
+// ===== 彈出視窗 =====
+function modal(html){ const m = $('#modal'); m.innerHTML = `<div class="sheet">${html}</div>`; m.hidden = false }
+function closeModal(){ const m = $('#modal'); m.hidden = true; m.innerHTML = '' }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal() });
+
+function openGrid(){
+  modal(`<h3>跳到第幾杯<button data-act="close">✕</button></h3>
+    <div class="grid">${cupsArr().map(i => { const r = R(i); return `<button class="gcell ${rated(r) ? 'done' : ''} ${i === S.cur ? 'cur' : ''}" data-act="go" data-n="${i}">${i}<i>${LIKE_EMO[r.like] || ''}</i></button>` }).join('')}</div>
+    <p class="legend">綠底＝評過了　❤️👍✕＝整體感覺</p>`);
+}
+function openMenu(){
+  const s = S.sess;
+  modal(`<h3>${esc(s.name)}<button data-act="close">✕</button></h3>
+    <button class="mitem" data-act="share">📲 邀請朋友加入（QR Code）</button>
+    ${isHost() ? `<button class="mitem" data-act="addCup">➕ 加一杯（目前 ${s.cups} 杯）</button>` : ''}
+    ${isHost() && !s.revealed ? `<button class="mitem" data-act="toggleBlind">${s.blind ? '👁 關閉盲品模式' : '🙈 開啟盲品模式'}</button>` : ''}
+    <button class="mitem" data-act="rename">✏️ 改我的名字（${esc(S.name)}）</button>
+    <button class="mitem" data-act="home">🏠 回首頁</button>`);
+}
+let qrLib;
+function loadQR(){
+  if (qrLib) return qrLib;
+  qrLib = new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc) });
+  qrLib.catch(() => qrLib = null);
+  return qrLib;
+}
+function openShare(){
+  const url = linkFor(S.code);
+  modal(`<h3>邀請朋友<button data-act="close">✕</button></h3>
+    <div id="qr"></div>
+    <div class="code">${S.code}</div>
+    <div class="link">${esc(url)}</div>
+    <button class="btn" data-act="copy">複製連結</button>
+    ${navigator.share ? '<button class="btn ghost" data-act="nshare">用 LINE 等 App 分享</button>' : ''}
+    <button class="btn ghost" data-act="close">開始評分</button>`);
+  loadQR().then(() => { const el = $('#qr'); if (el && window.QRCode) new QRCode(el, {text: url, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M}) }).catch(() => {});
+}
+
+// ===== 操作 =====
+function goCup(n){
+  n = Math.max(1, Math.min(S.sess.cups, Number(n)));
+  S.cur = n; LS.set('tea:cur:' + S.code, n);
+  closeModal();
+  const was = S.view; S.view = 'rate';
+  render();
+  if (was === 'rate') window.scrollTo(0, 0);
+}
+const ACT = {
+  saveName(){ const v = ($('#nmIn').value || '').trim(); if (!v) return toast('請輸入名字'); S.name = v; LS.set('tea:name', v); if (S.pendingCode){ const c = S.pendingCode; S.pendingCode = null; openSession(c) } else { S.view = 'home'; render() } },
+  rename(){
+    const v = (prompt('你的名字', S.name) || '').trim(); if (!v) return;
+    S.name = v; LS.set('tea:name', v); closeModal();
+    if (S.code){ lastDone = -1; save() }
+    render();
+  },
+  nc(b){ S.newCups = Math.max(1, Math.min(60, S.newCups + Number(b.dataset.d))); keepHomeInputs(render) },
+  ncSet(b){ S.newCups = Number(b.dataset.n); keepHomeInputs(render) },
+  create(){ createSession() },
+  join(){ const c = ($('#jnCode').value || '').trim(); if (c.length < 6) return toast('代碼是 6 碼'); openSession(c) },
+  open(b){ openSession(b.dataset.code) },
+  seg(b){ const f = b.dataset.f, v = Number(b.dataset.v); upd(r => { if (r[f] === v) delete r[f]; else r[f] = v }); render() },
+  chip(b){ const f = b.dataset.f, k = b.dataset.k; upd(r => { const m = r[f] || (r[f] = {}); const lv = ((m[k] || 0) + 1) % 3; if (lv) m[k] = lv; else delete m[k]; if (!Object.keys(m).length) delete r[f] }); render() },
+  addScent(){ const v = (prompt('自訂香型（例：桂花）') || '').trim().replace(/[.\/\[\]*`~]/g, ''); if (!v) return; upd(r => { (r.scents || (r.scents = {}))[v] = 1 }); render() },
+  like(b){ const v = b.dataset.v; upd(r => { if (r.like === v) delete r.like; else r.like = v }); if (v === 'no') S.me.top = S.me.top.filter(x => Number(x) !== S.cur); render() },
+  phrase(b){ const ta = $('#note'); const cur = ta.value.trim(); ta.value = cur ? cur + '，' + b.dataset.p : b.dataset.p; upd(r => r.note = ta.value); render() },
+  go(b){ goCup(b.dataset.n) },
+  prev(){ if (S.cur > 1) goCup(S.cur - 1) },
+  next(){ if (S.cur < S.sess.cups) goCup(S.cur + 1); else toast('這是最後一杯了') },
+  grid(){ openGrid() },
+  menu(){ openMenu() },
+  close(){ closeModal() },
+  over(){ S.view = 'over'; render() },
+  back(){ S.view = 'rate'; render() },
+  tab(b){ S.tab = b.dataset.k; render() },
+  sort(b){ S.sort = b.dataset.k; render() },
+  filter(b){ S.filter = b.dataset.k || null; render() },
+  pick(b){ const n = Number(b.dataset.n); let t = S.me.top.map(Number); if (t.includes(n)) t = t.filter(x => x !== n); else { if (t.length >= 3) return toast('前三名已選滿，先點上面的名次移除'); t.push(n) } S.me.top = t; save(); render() },
+  unpick(b){ const n = Number(b.dataset.n); S.me.top = S.me.top.map(Number).filter(x => x !== n); save(); render() },
+  share(){ openShare() },
+  async copy(){ try { await navigator.clipboard.writeText(linkFor(S.code)); toast('已複製連結') } catch { prompt('複製這個連結', linkFor(S.code)) } },
+  nshare(){ navigator.share({title: S.sess.name, text: `一起來評茶！代碼 ${S.code}`, url: linkFor(S.code)}).catch(() => {}) },
+  addCup(){ S.api.updateSession(S.code, {cups: S.sess.cups + 1}).then(() => toast(`已加到 ${S.sess.cups} 杯`)).catch(() => toast('加杯失敗')); closeModal() },
+  toggleBlind(){ S.api.updateSession(S.code, {blind: !S.sess.blind}); closeModal() },
+  reveal(){ if (!confirm('揭曉之後，大家都會看到所有人的評分，確定嗎？')) return; S.api.updateSession(S.code, {revealed: true}).catch(() => toast('揭曉失敗')) },
+  home(){ closeModal(); closeSession(); setUrl(null); S.view = 'home'; render() },
+};
+function keepHomeInputs(fn){
+  const n = $('#nsName')?.value, b = $('#nsBlind')?.checked, j = $('#jnCode')?.value;
+  fn();
+  if ($('#nsName')) $('#nsName').value = n || '';
+  if ($('#nsBlind')) $('#nsBlind').checked = !!b;
+  if ($('#jnCode')) $('#jnCode').value = j || '';
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (!b || b.tagName === 'DETAILS') return;
+  const f = ACT[b.dataset.act];
+  if (f){ e.preventDefault(); f(b, e) }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'note'){ const v = e.target.value; upd(r => { if (v) r.note = v; else delete r.note }) }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'cupdate' && isHost()){
+    const n = e.target.dataset.n, v = e.target.value.trim();
+    S.api.updateSession(S.code, {cupInfo: {[n]: {date: v}}}).catch(() => toast('儲存日期失敗'));
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'jnCode') ACT.join();
+  if (e.key === 'Enter' && e.target.id === 'nmIn') ACT.saveName();
+});
+// 左右滑動切換杯子
+let tx = null, ty = 0;
+document.addEventListener('touchstart', e => {
+  if (S.view !== 'rate' || e.target.closest('textarea,input,.strip,.chips,.tw')) { tx = null; return }
+  tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+}, {passive: true});
+document.addEventListener('touchend', e => {
+  if (tx == null) return;
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  tx = null;
+  if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 2){ dx < 0 ? ACT.next() : ACT.prev() }
+}, {passive: true});
+
+// ===== 啟動 =====
+(async function boot(){
+  try { S.api = MOCK ? makeMock() : await makeFirebase() }
+  catch (e){
+    console.error(e);
+    $('#app').innerHTML = `<div class="center">連不上資料庫，請確認網路後重新整理。<br><br><button class="btn" style="max-width:240px;margin:auto" onclick="location.reload()">重新整理</button><p style="font-size:12px;margin-top:16px">${esc(e && e.message || e)}</p></div>`;
+    return;
+  }
+  const code = P.get('s');
+  if (code) openSession(code);
+  else { S.view = S.name ? 'home' : 'name'; render() }
+})();
+</script>
+</body>
+</html>
