@@ -86,13 +86,18 @@ textarea{width:100%;min-height:84px;border-radius:12px;border:1px solid var(--li
 .stepper .qk button.on{background:var(--g);color:#fff;border-color:var(--g)}
 .pm{width:46px;font-size:20px}
 .num{min-width:44px;text-align:center;font-size:22px;font-weight:700}
-.toggle{display:flex;align-items:center;gap:10px;font-size:15px;padding:6px 0}
-.toggle input{width:22px;height:22px;accent-color:var(--g)}
+.dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dates label{display:flex;align-items:center;gap:6px;min-width:0}
+.dates b{width:24px;text-align:right;flex:0 0 24px}
+.dates input{flex:1;min-width:0;width:100%;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:0 10px}
 .brand{padding:28px 16px 4px}
 .brand h1{margin:0;font-size:26px;letter-spacing:.08em}
 .brand p{margin:4px 0 0;color:var(--muted);font-size:14px}
-.recent button{display:flex;justify-content:space-between;width:100%;padding:12px 2px;border-bottom:1px solid var(--line);font-size:15px}
-.recent button:last-child{border:0}
+.rrow{display:flex;align-items:center;border-bottom:1px solid var(--line)}
+.rrow:last-of-type{border:0}
+.rrow [data-act=open]{flex:1;display:flex;justify-content:space-between;padding:12px 2px;font-size:15px;min-width:0}
+.rx{width:44px;height:44px;color:var(--muted);font-size:16px;flex:0 0 44px}
+.mitem.danger{color:var(--w)}
 .recent small{color:var(--muted)}
 .banner{margin:12px;padding:10px 12px;border-radius:12px;background:var(--w2);color:var(--w);font-size:13px}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 12px 0;background:var(--card);padding:4px;border-radius:14px;border:1px solid var(--line)}
@@ -214,6 +219,10 @@ function makeMock(){
     async savePlayer(c, u, d){ wr(`sessions/${c}/players/${u}`, d) },
     async loadPlayer(c, u){ return rd(`sessions/${c}/players/${u}`) },
     watchPlayers(c, cb){ const pre = `sessions/${c}/players/`; return watch(pre, () => cb(list(pre))) },
+    async deleteSession(c, uids){
+      uids.forEach(u => { localStorage.removeItem(K(`sessions/${c}/players/${u}`)); localStorage.removeItem(K(`sessions/${c}/members/${u}`)) });
+      localStorage.removeItem(K('sessions/' + c)); fire('sessions/' + c);
+    },
   };
 }
 
@@ -231,7 +240,7 @@ async function makeFirebase(){
   const user = await new Promise((res, rej) => {
     const off = onAuthStateChanged(auth, u => { if (u){ off(); res(u) } else signInAnonymously(auth).catch(rej) });
   });
-  const {doc, getDoc, setDoc, onSnapshot, collection} = fs;
+  const {doc, getDoc, setDoc, deleteDoc, onSnapshot, collection} = fs;
   const sd = c => doc(db, 'sessions', c);
   const mapCol = snap => { const o = {}; snap.forEach(d => o[d.id] = d.data()); return o };
   const warn = e => console.warn(e);
@@ -246,6 +255,11 @@ async function makeFirebase(){
     savePlayer(c, u, d){ return setDoc(doc(db, 'sessions', c, 'players', u), d) },
     async loadPlayer(c, u){ const s = await getDoc(doc(db, 'sessions', c, 'players', u)); return s.exists() ? s.data() : null },
     watchPlayers(c, cb){ return onSnapshot(collection(db, 'sessions', c, 'players'), s => cb(mapCol(s)), warn) },
+    // 先刪每個人的評分和名單，最後才刪場次本身（規則要靠場次確認你是主揪）
+    async deleteSession(c, uids){
+      await Promise.all(uids.flatMap(u => [deleteDoc(doc(db, 'sessions', c, 'players', u)), deleteDoc(doc(db, 'sessions', c, 'members', u))]));
+      await deleteDoc(sd(c));
+    },
   };
 }
 
@@ -313,7 +327,9 @@ function addRecent(code, name){
   list.unshift({code, name, at: Date.now()});
   LS.set('tea:recent', list.slice(0, 8));
 }
+function removeRecent(code){ LS.set('tea:recent', LS.get('tea:recent', []).filter(x => x.code !== code)) }
 function closeSession(){
+  clearTimeout(saveT);
   S.unsubs.forEach(f => f()); S.unsubs = [];
   if (S.playersUnsub){ S.playersUnsub(); S.playersUnsub = null }
   S.code = null; S.sess = null; S.members = {}; S.players = {}; S.me = {ratings: {}, top: []}; lastDone = -1;
@@ -335,7 +351,10 @@ async function openSession(code){
   addRecent(code, sess.name);
   setUrl(code);
   S.unsubs.push(S.api.watchSession(code, s => {
-    if (!s) return;
+    if (!s){
+      if (S.code === code && !S.deleting){ removeRecent(code); closeSession(); setUrl(null); closeModal(); S.view = 'home'; render(); toast('主揪已經刪除這個場次') }
+      return;
+    }
     S.sess = s;
     if (s.revealed && !S.playersUnsub) S.playersUnsub = S.api.watchPlayers(code, m => { S.players = m; if (S.view === 'over') softRender() });
     softRender();
@@ -409,8 +428,7 @@ function viewHome(){
         <div class="qk">${qk.map(n => `<button class="${S.newCups === n ? 'on' : ''}" data-act="ncSet" data-n="${n}">${n}</button>`).join('')}</div>
       </div>
     </div>
-    <label class="toggle"><input type="checkbox" id="nsBlind"> 盲品模式（先藏起製作日期，揭曉後才顯示）</label>
-    <div style="height:8px"></div>
+    <p class="hint" style="margin:0 0 12px">預設盲喝：製作日期最後揭曉時才填、才公布</p>
     <button class="btn" data-act="create">建立並邀請朋友</button>
   </div>
   <div class="card">
@@ -418,7 +436,7 @@ function viewHome(){
     <div class="field"><input type="text" id="jnCode" placeholder="輸入 6 碼代碼" maxlength="6" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.2em"></div>
     <button class="btn ghost" data-act="join">加入</button>
   </div>
-  ${recent.length ? `<div class="card recent"><h2>最近的場次</h2>${recent.map(x => `<button data-act="open" data-code="${esc(x.code)}"><span>${esc(x.name)}</span><small>${esc(x.code)}</small></button>`).join('')}</div>` : ''}`;
+  ${recent.length ? `<div class="card recent"><h2>最近的場次</h2>${recent.map(x => `<div class="rrow"><button data-act="open" data-code="${esc(x.code)}"><span>${esc(x.name)}</span><small>${esc(x.code)}</small></button><button class="rx" data-act="forget" data-code="${esc(x.code)}" aria-label="從清單移除">✕</button></div>`).join('')}<p class="hint">按 ✕ 只是從這支手機的清單移除，不會刪掉場次</p></div>` : ''}`;
 }
 
 function seg(r, q){
@@ -439,10 +457,11 @@ function allScents(){
 
 function viewRate(){
   const n = S.cur, r = R(n), s = S.sess, info = (s.cupInfo || {})[n] || {};
-  const blindHide = s.blind && !s.revealed && !isHost();
-  const meta = isHost()
-    ? `<span style="color:var(--muted)">製作日期</span><input id="cupdate" data-n="${n}" value="${esc(info.date || '')}" placeholder="例：10/28 冬茶">`
-    : blindHide ? `🙈 盲品中，揭曉後才會顯示製作日期` : `製作日期　<span>${esc(info.date || '未填')}</span>`;
+  const meta = !s.revealed
+    ? `🙈 盲喝中，製作日期會在揭曉時公布`
+    : isHost()
+      ? `<span style="color:var(--muted)">製作日期</span><input class="cupdate" id="cd${n}" data-n="${n}" value="${esc(info.date || '')}" placeholder="例：10/28 冬茶">`
+      : `製作日期　<span>${esc(info.date || '未填')}</span>`;
   const secs = SECTIONS.map(sec => `<section class="card"><h2>${sec.t}</h2>
     ${sec.q.map(q => seg(r, q)).join('')}
     ${sec.scents ? `<div class="q"><div class="ql"><span>香型</span><small>點一下＝淡，兩下＝濃，三下取消</small></div>
@@ -569,7 +588,9 @@ function viewAll(){
     return `<section class="card"><h2>參加的人（${mem.length}）</h2>${memList}</section>
     <section class="card">
       ${isHost()
-        ? `<p style="margin:0 0 12px;font-size:14px;color:var(--muted)">揭曉之前，每個人只看得到自己的評分。大家都評完之後，按下面的按鈕公布所有人的結果。</p><button class="btn" data-act="reveal">揭曉結果</button>`
+        ? `<h2>揭曉前，填上每杯的製作日期</h2>
+           <div class="dates">${cupsArr().map(n => `<label><b>${n}</b><input class="cupdate" id="cd${n}" data-n="${n}" value="${esc((s.cupInfo || {})[n]?.date || '')}" placeholder="例：10/28 冬茶"></label>`).join('')}</div>
+           <p style="margin:12px 0;font-size:14px;color:var(--muted)">日期打完會自動儲存，不用每格都填。揭曉之前，每個人只看得到自己的評分；按下揭曉後，大家會看到所有人的結果和製作日期。</p><button class="btn" data-act="reveal">揭曉結果</button>`
         : `<div class="empty">等主揪按「揭曉」之後，<br>這裡會顯示所有人的結果</div>`}
     </section>`;
   }
@@ -617,9 +638,9 @@ function openMenu(){
   modal(`<h3>${esc(s.name)}<button data-act="close">✕</button></h3>
     <button class="mitem" data-act="share">📲 邀請朋友加入（QR Code）</button>
     ${isHost() ? `<button class="mitem" data-act="addCup">➕ 加一杯（目前 ${s.cups} 杯）</button>` : ''}
-    ${isHost() && !s.revealed ? `<button class="mitem" data-act="toggleBlind">${s.blind ? '👁 關閉盲品模式' : '🙈 開啟盲品模式'}</button>` : ''}
     <button class="mitem" data-act="rename">✏️ 改我的名字（${esc(S.name)}）</button>
-    <button class="mitem" data-act="home">🏠 回首頁</button>`);
+    <button class="mitem" data-act="home">🏠 回首頁</button>
+    ${isHost() ? `<button class="mitem danger" data-act="delSession">🗑 刪除這個場次</button>` : ''}`);
 }
 let qrLib;
 function loadQR(){
@@ -687,6 +708,19 @@ const ACT = {
   toggleBlind(){ S.api.updateSession(S.code, {blind: !S.sess.blind}); closeModal() },
   reveal(){ if (!confirm('揭曉之後，大家都會看到所有人的評分，確定嗎？')) return; S.api.updateSession(S.code, {revealed: true}).catch(() => toast('揭曉失敗')) },
   home(){ closeModal(); closeSession(); setUrl(null); S.view = 'home'; render() },
+  forget(b){ removeRecent(b.dataset.code); keepHomeInputs(render) },
+  async delSession(){
+    if (!isHost()) return;
+    if (!confirm(`確定要刪除「${S.sess.name}」嗎？\n所有人的評分都會一起刪掉，無法復原。`)) return;
+    const code = S.code, uids = [...new Set([...Object.keys(S.members), S.api.uid])];
+    clearTimeout(saveT);
+    S.deleting = true; closeModal(); toast('刪除中…');
+    try {
+      await S.api.deleteSession(code, uids);
+      removeRecent(code); closeSession(); setUrl(null); S.view = 'home'; render(); toast('已刪除場次');
+    } catch (e){ console.warn(e); toast('刪除失敗，請確認網路') }
+    S.deleting = false;
+  },
 };
 function keepHomeInputs(fn){
   const n = $('#nsName')?.value, b = $('#nsBlind')?.checked, j = $('#jnCode')?.value;
@@ -705,7 +739,7 @@ document.addEventListener('input', e => {
   if (e.target.id === 'note'){ const v = e.target.value; upd(r => { if (v) r.note = v; else delete r.note }) }
 });
 document.addEventListener('change', e => {
-  if (e.target.id === 'cupdate' && isHost()){
+  if (e.target.classList.contains('cupdate') && isHost()){
     const n = e.target.dataset.n, v = e.target.value.trim();
     S.api.updateSession(S.code, {cupInfo: {[n]: {date: v}}}).catch(() => toast('儲存日期失敗'));
   }
