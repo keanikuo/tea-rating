@@ -21,7 +21,7 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:16px;line-height:1.45}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
 input,textarea{font:inherit;font-size:16px;color:var(--ink)}
-#app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+#app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:calc(124px + env(safe-area-inset-bottom))}
 .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top));background:var(--bg);border-bottom:1px solid var(--line)}
 .icon{min-width:48px;height:48px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);padding:0 10px;font-size:15px;border:1px solid var(--line)}
 .cupbtn{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;height:54px;border-radius:14px;background:var(--g);color:#fff}
@@ -62,6 +62,9 @@ textarea{width:100%;min-height:84px;border-radius:12px;border:1px solid var(--li
 .savest{text-align:center;font-size:12px;color:var(--muted);min-height:18px;margin:4px 0 8px}
 .strip{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
 .strip-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:4px}
+.strip-lab{max-width:560px;margin:0 auto 6px;padding:0 10px;display:flex;align-items:baseline;gap:10px;font-size:12px;color:var(--muted)}
+.strip-lab b{font-size:14px;color:var(--g)}
+.strip-lab span:last-child{margin-left:auto}
 .cups{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
 .cups::-webkit-scrollbar{display:none}
 .cup{flex:0 0 46px;height:54px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600;font-size:16px;line-height:1.1}
@@ -149,7 +152,7 @@ td.sc b{color:var(--g)}
 #qr{display:flex;justify-content:center;margin:8px 0}
 #qr img,#qr canvas{border:10px solid #fff;border-radius:10px}
 .link{font-size:12px;color:var(--muted);word-break:break-all;text-align:center;margin-bottom:12px}
-#toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--card);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;white-space:nowrap}
+#toast{position:fixed;left:50%;bottom:calc(136px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--card);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;white-space:nowrap}
 #toast.show{opacity:1}
 .center{padding:60px 20px;text-align:center;color:var(--muted)}
 </style>
@@ -505,13 +508,13 @@ function viewRate(){
   </header>
   <main id="rate">
     <div class="meta">${meta}</div>
-    <section class="card"><h2>整體感覺</h2>
-      <div class="like">${LIKES.map(([k, e, l]) => `<button class="${r.like === k ? 'on ' + k : ''}" data-act="like" data-v="${k}"><span>${e}</span>${l}</button>`).join('')}</div>
-    </section>
     ${secs}
     <section class="card"><h2>缺點</h2>
       <div class="chips">${DEFECTS.map(d => chip(r.defects, d.k, d.l, 'neg', 'defects')).join('')}</div>
       <details class="hint"><summary>點一下＝微，兩下＝明顯，三下取消（看說明）</summary>${DEFECTS.map(d => `<p><b>${d.l}</b>：${d.d}</p>`).join('')}</details>
+    </section>
+    <section class="card"><h2>整體感覺</h2>
+      <div class="like">${LIKES.map(([k, e, l]) => `<button class="${r.like === k ? 'on ' + k : ''}" data-act="like" data-v="${k}"><span>${e}</span>${l}</button>`).join('')}</div>
     </section>
     <section class="card"><h2>備註</h2>
       <div class="phr">${PHRASES.map(p => `<button data-act="phrase" data-p="${p}">＋${p}</button>`).join('')}</div>
@@ -519,7 +522,9 @@ function viewRate(){
     </section>
     <div class="savest" id="savest"></div>
   </main>
-  <nav class="strip"><div class="strip-in">
+  <nav class="strip">
+  <div class="strip-lab"><b>第 ${n} 杯</b><span>共 ${s.cups} 杯・已評 ${doneCount()} 杯</span><span>‹ 左右滑動切換 ›</span></div>
+  <div class="strip-in">
     <button class="nav" data-act="prev" aria-label="上一杯">‹</button>
     <div class="cups">${cupsArr().map(i => { const ri = R(i); return `<button class="cup ${i === n ? 'cur' : ''} ${rated(ri) ? 'done' : ''}" data-act="go" data-n="${i}">${i}<i>${LIKE_EMO[ri.like] || ''}</i></button>` }).join('')}</div>
     <button class="nav" data-act="next" aria-label="下一杯">›</button>
