@@ -48,6 +48,12 @@ input,textarea{font:inherit;font-size:16px;color:var(--ink)}
 .hint{font-size:12px;color:var(--muted);margin:8px 0 0}
 details.hint summary{cursor:pointer}
 details.hint p{margin:4px 0}
+.swatches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sw{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px}
+.sw i{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.sw.on{border-color:var(--g);background:var(--g2);box-shadow:inset 0 0 0 1.5px var(--g);font-weight:600}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+td small{font-size:11px;color:var(--w);margin-left:2px}
 .like{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .like button{height:64px;border-radius:14px;border:1px solid var(--line);background:var(--bg);font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .like button span{font-size:24px;line-height:1}
@@ -182,17 +188,28 @@ const DEFECTS = [
   {k:'火味', l:'火味太重', d:'焙火味蓋過茶本身的香'},
   {k:'雜味', l:'雜味', d:'其他不該有的味道'},
 ];
-const AROMA=['無','淡','中','濃'], BSA=['無','微','中','很'], BODY=['普通','飽滿'], AFT=['無','微','明顯'], AFT2=['無','有','明顯'];
+const AROMA=['無','淡','中','濃'], BSA=['無','微','中','很'], THICK=['單薄','適中','醇厚'], CLEAR=['清澈明亮','普通','混濁'], AFT=['無','微','明顯'], AFT2=['無','有','明顯'];
+// 湯色：包種茶由淺到深
+const COLORS = [
+  {k:'淺綠', c:'#dfe3a8', d:'發酵很輕、很新鮮'},
+  {k:'蜜綠', c:'#cdd170', d:'典型文山包種'},
+  {k:'黃綠', c:'#d4c55a', d:'發酵稍重一點'},
+  {k:'金黃', c:'#e2b33a', d:'發酵較足或有輕焙'},
+  {k:'蜜黃', c:'#d0952e', d:'焙火或存放過'},
+  {k:'琥珀', c:'#a9672a', d:'重焙或老茶'},
+];
+const COLOR_HEX = Object.fromEntries(COLORS.map(x => [x.k, x.c]));
 const SECTIONS = [
   {t:'聞香', q:[{f:'aroma',l:'香氣強度',v:AROMA,k:'pos'}], scents:true},
-  {t:'滋味', q:[{f:'bitter',l:'苦',v:BSA,k:'neg'},{f:'astr',l:'澀',v:BSA,k:'neg'},{f:'sweet',l:'甜',v:BSA,k:'pos'},{f:'body',l:'湯感',v:BODY,k:'pos',s:'喝起來空、淡的，請到缺點勾「水味」'}]},
+  {t:'湯色', colors:true, q:[{f:'clarity',l:'清澈度',v:CLEAR,k:['pos','zero','neg'],s:'混濁通常是製程或沖泡有問題'}]},
+  {t:'滋味', q:[{f:'bitter',l:'苦',v:BSA,k:'neg'},{f:'astr',l:'澀',v:BSA,k:'neg'},{f:'sweet',l:'甜',v:BSA,k:'pos'},{f:'thick',l:'茶湯厚度',v:THICK,k:['zero','pos','pos'],s:'喝起來空空、水水的選「單薄」'}]},
   {t:'餘韻', q:[{f:'huigan',l:'回甘',v:AFT,k:'pos'},{f:'huixiang',l:'回香',v:AFT2,k:'pos',s:'吞下後香氣回來'},{f:'shengjin',l:'生津',v:AFT2,k:'pos'}]},
 ];
 const LIKES = [['love','❤️','喜歡'],['ok','👍','還可以'],['no','✕','不愛']];
 const LIKE_EMO = {love:'❤️', ok:'👍', no:'✕'};
 const MEDAL = ['🥇','🥈','🥉'];
 const PHRASES = ['想買','回沖再試','香氣持久','入口滑順','跟前一杯很像'];
-const COLS = [['aroma','香',AROMA,'p'],['bitter','苦',BSA,'n'],['astr','澀',BSA,'n'],['sweet','甜',BSA,'p'],['body','湯',BODY,'p'],['huigan','甘',AFT,'p'],['huixiang','回香',AFT2,'p'],['shengjin','津',AFT2,'p']];
+const COLS = [['aroma','香',AROMA,'p'],['bitter','苦',BSA,'n'],['astr','澀',BSA,'n'],['sweet','甜',BSA,'p'],['thick','厚',THICK,'p'],['huigan','甘',AFT,'p'],['huixiang','回香',AFT2,'p'],['shengjin','津',AFT2,'p']];
 
 // ===== 小工具 =====
 const $ = s => document.querySelector(s);
@@ -383,6 +400,8 @@ async function openSession(code, fresh){
   closeSession();
   S.code = code; S.sess = sess;
   if (player) S.me = {ratings: player.ratings || {}, top: player.top || []};
+  // 舊版「湯感」（普通/飽滿）轉成「茶湯厚度」（適中/醇厚）
+  Object.values(S.me.ratings).forEach(r => { if (r.body != null){ if (r.thick == null) r.thick = r.body + 1; delete r.body } });
   S.cur = Math.min(LS.get('tea:cur:' + code, 1), sess.cups) || 1;
   lastDone = doneCount();
   S.api.setMember(code, S.api.uid, {name: S.name, done: lastDone, t: Date.now()}).catch(console.warn);
@@ -476,7 +495,12 @@ function viewHome(){
 function seg(r, q){
   const v = r[q.f];
   return `<div class="q"><div class="ql"><span>${q.l}</span>${q.s ? `<small>${q.s}</small>` : ''}</div>
-  <div class="seg">${q.v.map((lab, i) => `<button class="${v === i ? 'on ' + (i === 0 && !(q.f === 'body') ? 'zero' : q.k) : ''}" data-act="seg" data-f="${q.f}" data-v="${i}">${lab}</button>`).join('')}</div></div>`;
+  <div class="seg">${q.v.map((lab, i) => `<button class="${v === i ? 'on ' + (Array.isArray(q.k) ? q.k[i] : i === 0 ? 'zero' : q.k) : ''}" data-act="seg" data-f="${q.f}" data-v="${i}">${lab}</button>`).join('')}</div></div>`;
+}
+function colorPicker(r){
+  return `<div class="q"><div class="ql"><span>顏色</span><small>點一下選，再點一下取消</small></div>
+  <div class="swatches">${COLORS.map(x => `<button class="sw ${r.color === x.k ? 'on' : ''}" data-act="color" data-k="${x.k}"><i style="background:${x.c}"></i>${x.k}</button>`).join('')}</div>
+  <details class="hint"><summary>各顏色通常代表什麼</summary>${COLORS.map(x => `<p><b>${x.k}</b>：${x.d}</p>`).join('')}</details></div>`;
 }
 function chip(map, key, label, kind, f){
   const lv = (map || {})[key] || 0;
@@ -497,6 +521,7 @@ function viewRate(){
       ? `<span style="color:var(--muted)">製作日期</span><input class="cupdate" id="cd${n}" data-n="${n}" value="${esc(info.date || '')}" placeholder="例：10/28 冬茶">`
       : `製作日期　<span>${esc(info.date || '未填')}</span>`;
   const secs = SECTIONS.map(sec => `<section class="card"><h2>${sec.t}</h2>
+    ${sec.colors ? colorPicker(r) : ''}
     ${sec.q.map(q => seg(r, q)).join('')}
     ${sec.scents ? `<div class="q"><div class="ql"><span>香型</span><small>點一下＝淡，兩下＝濃，三下取消</small></div>
       <div class="chips">${allScents().map(k => chip(r.scents, k, k, 'pos', 'scents')).join('')}<button class="chip add" data-act="addScent">＋ 自訂</button></div></div>` : ''}
@@ -535,7 +560,7 @@ function cellFor(r, c){
   const [f, , labs, k] = c;
   const v = r[f];
   if (v == null) return '<td class="e">·</td>';
-  const lv = f === 'body' ? v * 2 : labs.length === 3 ? [0, 2, 3][v] : v;
+  const lv = labs.length === 3 ? [0, 2, 3][v] : v;
   return `<td class="h${k}${lv}">${labs[v]}</td>`;
 }
 function sortedCups(){
@@ -570,6 +595,7 @@ function viewMine(){
     const sc = Object.entries(r.scents || {}).map(([k, v]) => v === 2 ? `<b>${esc(k)}</b>` : esc(k)).join('、');
     return `<tr data-act="go" data-n="${n}"><td class="cn">${n}${ti >= 0 ? MEDAL[ti] : ''}</td>
       <td>${LIKE_EMO[r.like] || '<span style="color:var(--line)">·</span>'}</td>
+      <td class="${r.color ? '' : 'e'}">${r.color ? `<i class="dot" style="background:${COLOR_HEX[r.color] || '#ccc'}"></i>${r.clarity === 2 ? '<small>濁</small>' : ''}` : '·'}</td>
       ${COLS.map(c => cellFor(r, c)).join('')}
       <td class="${defs.length ? 'hn' + (maxD === 2 ? 3 : 1) : 'e'}">${defs.length ? defs.map(([k]) => k[0]).join('') : '·'}</td>
       <td class="sc">${sc}</td></tr>`;
@@ -585,7 +611,7 @@ function viewMine(){
     <div class="sorts">${sorts.map(([k, l]) => `<button class="${S.sort === k ? 'on' : ''}" data-act="sort" data-k="${k}">${l}</button>`).join('')}</div>
     ${scentsUsed.length ? `<div class="sorts"><button class="${!S.filter ? 'on' : ''}" data-act="filter" data-k="">全部香型</button>${scentsUsed.map(k => `<button class="${S.filter === k ? 'on' : ''}" data-act="filter" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>` : ''}
     <div class="tw"><table>
-      <thead><tr><th>杯</th><th>感覺</th>${COLS.map(c => `<th>${c[1]}</th>`).join('')}<th>缺點</th><th style="text-align:left">香型</th></tr></thead>
+      <thead><tr><th>杯</th><th>感覺</th><th>湯色</th>${COLS.map(c => `<th>${c[1]}</th>`).join('')}<th>缺點</th><th style="text-align:left">香型</th></tr></thead>
       <tbody>${rows || ''}</tbody>
     </table></div>
     ${!rows ? '<div class="empty">沒有符合的杯子</div>' : ''}
@@ -751,6 +777,7 @@ const ACT = {
     if (b.classList.contains('mitem')) b.innerHTML = `${THEMES[getTheme()]}<small style="color:var(--muted);font-size:13px">　點一下切換</small>`;
     else if (S.view === 'home') keepHomeInputs(render);
   },
+  color(b){ const v = b.dataset.k; upd(r => { if (r.color === v) delete r.color; else r.color = v }); render() },
   forget(b){ removeRecent(b.dataset.code); keepHomeInputs(render) },
   async delSession(){
     if (!isHost()) return;
