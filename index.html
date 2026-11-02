@@ -10,9 +10,13 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="manifest" href="manifest.json">
 <title>品茶評分</title>
+<script>try{var t=JSON.parse(localStorage.getItem('tea:theme'));if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
 :root{--bg:#f4efe4;--card:#fffdf8;--ink:#2a2924;--muted:#8b8475;--line:#e4dac7;--g:#3d6b4b;--g2:#dfe9da;--g3:#b5cdac;--w:#b8562f;--w2:#f6e2d6;--w3:#e8b49b;--z:#6f6a5e;--gold:#c99a2e;--shadow:0 1px 2px rgba(60,50,30,.06),0 4px 14px rgba(60,50,30,.06)}
-@media (prefers-color-scheme:dark){:root{--bg:#171815;--card:#23241f;--ink:#ece8de;--muted:#9c9686;--line:#38392f;--g:#7fb48a;--g2:#26362a;--g3:#3d5a43;--w:#e08660;--w2:#3c2920;--w3:#6c3f2c;--z:#8a8577;--shadow:none}}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#171815;--card:#23241f;--ink:#ece8de;--muted:#9c9686;--line:#38392f;--g:#7fb48a;--g2:#26362a;--g3:#3d5a43;--w:#e08660;--w2:#3c2920;--w3:#6c3f2c;--z:#8a8577;--shadow:none}}
+:root[data-theme=dark]{--bg:#171815;--card:#23241f;--ink:#ece8de;--muted:#9c9686;--line:#38392f;--g:#7fb48a;--g2:#26362a;--g3:#3d5a43;--w:#e08660;--w2:#3c2920;--w3:#6c3f2c;--z:#8a8577;--shadow:none}
+.themebtn{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13px;color:var(--muted)}
+.brand{position:relative}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:16px;line-height:1.45}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
@@ -198,6 +202,15 @@ const isObj = o => o && typeof o === 'object' && !Array.isArray(o);
 const deepMerge = (a, b) => { const o = {...a}; for (const k in b) o[k] = isObj(b[k]) && isObj(a[k]) ? deepMerge(a[k], b[k]) : b[k]; return o };
 let toastT;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800) }
+// 外觀：auto（跟著手機）→ light → dark
+const THEMES = {auto: '🌓 外觀：跟著手機', light: '☀️ 外觀：淺色', dark: '🌙 外觀：深色'};
+const getTheme = () => LS.get('tea:theme', 'auto');
+function cycleTheme(){
+  const next = {auto: 'light', light: 'dark', dark: 'auto'}[getTheme()] || 'auto';
+  LS.set('tea:theme', next);
+  if (next === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = next;
+  toast(THEMES[next]);
+}
 const today = () => { const d = new Date(); return `${d.getMonth()+1}/${d.getDate()}` };
 
 // ===== 資料層：模擬（測試用）=====
@@ -419,7 +432,7 @@ function viewHome(){
   const recent = LS.get('tea:recent', []);
   const qk = [10, 15, 20, 25];
   return `${MOCK ? '<div class="banner">模擬模式：資料只存在這台裝置，不會上傳</div>' : ''}
-  <div class="brand"><h1>品茶評分</h1><p>${S.name ? `嗨，${esc(S.name)}　<button data-act="rename" style="color:var(--g);font-size:14px">改名字</button>` : ''}</p></div>
+  <div class="brand"><button class="themebtn" data-act="theme">${({auto: '🌓 跟著手機', light: '☀️ 淺色', dark: '🌙 深色'})[getTheme()]}</button><h1>品茶評分</h1><p>${S.name ? `嗨，${esc(S.name)}　<button data-act="rename" style="color:var(--g);font-size:14px">改名字</button>` : ''}</p></div>
   <div class="card">
     <h2>開新場次</h2>
     <div class="field"><label>場次名稱</label><input type="text" id="nsName" placeholder="${today()} 品茶" maxlength="30"></div>
@@ -642,6 +655,7 @@ function openMenu(){
     <button class="mitem" data-act="share">📲 邀請朋友加入（QR Code）</button>
     ${isHost() ? `<button class="mitem" data-act="addCup">➕ 加一杯（目前 ${s.cups} 杯）</button>` : ''}
     <button class="mitem" data-act="rename">✏️ 改我的名字（${esc(S.name)}）</button>
+    <button class="mitem" data-act="theme">${THEMES[getTheme()]}<small style="color:var(--muted);font-size:13px">　點一下切換</small></button>
     <button class="mitem" data-act="home">🏠 回首頁</button>
     ${isHost() ? `<button class="mitem danger" data-act="delSession">🗑 刪除這個場次</button>` : ''}`);
 }
@@ -711,6 +725,11 @@ const ACT = {
   toggleBlind(){ S.api.updateSession(S.code, {blind: !S.sess.blind}); closeModal() },
   reveal(){ if (!confirm('揭曉之後，大家都會看到所有人的評分，確定嗎？')) return; S.api.updateSession(S.code, {revealed: true}).catch(() => toast('揭曉失敗')) },
   home(){ closeModal(); closeSession(); setUrl(null); S.view = 'home'; render() },
+  theme(b){
+    cycleTheme();
+    if (b.classList.contains('mitem')) b.innerHTML = `${THEMES[getTheme()]}<small style="color:var(--muted);font-size:13px">　點一下切換</small>`;
+    else if (S.view === 'home') keepHomeInputs(render);
+  },
   forget(b){ removeRecent(b.dataset.code); keepHomeInputs(render) },
   async delSession(){
     if (!isHost()) return;
