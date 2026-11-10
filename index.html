@@ -42,7 +42,12 @@ input,textarea{font:inherit;font-size:16px;color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{min-height:42px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-size:15px;display:inline-flex;align-items:center;gap:6px}
 .chip em{font-style:normal;font-size:12px;font-weight:600}
-.chip.pos.l1{background:var(--g2);border-color:var(--g3)}.chip.pos.l2{background:var(--g);color:#fff;border-color:var(--g)}
+.chip.pos.l1{background:var(--g2);border-color:var(--g3)}.chip.pos.l2{background:var(--g3);border-color:var(--g3)}.chip.pos.l3{background:var(--g);color:#fff;border-color:var(--g)}
+.subq{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px;padding:8px;border-radius:12px;background:var(--bg)}
+.subq span{font-size:12px;color:var(--muted);margin-right:2px}
+.mini{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px}
+.mini.on{background:var(--g);color:#fff;border-color:var(--g)}
+body.kb .strip{display:none}
 .chip.neg.l1{background:var(--w2);border-color:var(--w3)}.chip.neg.l2{background:var(--w);color:#fff;border-color:var(--w)}
 .chip.add{border-style:dashed;color:var(--muted)}
 .hint{font-size:12px;color:var(--muted);margin:8px 0 0}
@@ -54,11 +59,12 @@ details.hint p{margin:4px 0}
 .sw.on{border-color:var(--g);background:var(--g2);box-shadow:inset 0 0 0 1.5px var(--g);font-weight:600}
 .dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
 td small{font-size:11px;color:var(--w);margin-left:2px}
-.like{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.like button{height:64px;border-radius:14px;border:1px solid var(--line);background:var(--bg);font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.like{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.like button{height:66px;border-radius:14px;border:1px solid var(--line);background:var(--bg);font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;white-space:nowrap}
 .like button span{font-size:24px;line-height:1}
 .like button.on{border-color:var(--g);background:var(--g2);box-shadow:inset 0 0 0 1.5px var(--g)}
 .like button.on.no{border-color:var(--w);background:var(--w2);box-shadow:inset 0 0 0 1.5px var(--w)}
+.like button.on.meh{border-color:var(--z);background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--z)}
 .meta{display:flex;align-items:center;gap:10px;margin:12px 12px 0;font-size:14px;color:var(--muted)}
 .meta input{flex:1;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);padding:0 12px}
 .meta span{color:var(--ink)}
@@ -96,12 +102,13 @@ textarea{width:100%;min-height:84px;border-radius:12px;border:1px solid var(--li
 .field{margin-bottom:12px}
 .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
 .field input[type=text]{width:100%;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);padding:0 14px}
-.stepper{display:flex;align-items:center;gap:8px}
-.stepper .qk{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.stepper .qk button,.pm{height:46px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
-.stepper .qk button.on{background:var(--g);color:#fff;border-color:var(--g)}
-.pm{width:46px;font-size:20px}
-.num{min-width:44px;text-align:center;font-size:22px;font-weight:700}
+.qk{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
+.qk button,.pm{height:46px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+.qk button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.stepper{display:flex;align-items:center;justify-content:center;gap:14px}
+.pm{width:56px;font-size:20px}
+.num{min-width:72px;text-align:center;font-size:22px;font-weight:700}
+.num small{font-size:13px;font-weight:500;color:var(--muted)}
 .dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .dates label{display:flex;align-items:center;gap:6px;min-width:0}
 .dates b{width:24px;text-align:right;flex:0 0 24px}
@@ -120,7 +127,7 @@ textarea{width:100%;min-height:84px;border-radius:12px;border:1px solid var(--li
 .tabs button{height:42px;border-radius:10px;font-size:15px}
 .tabs button.on{background:var(--g);color:#fff}
 .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.slot{height:76px;border-radius:14px;border:1.5px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.slot{width:100%;height:76px;border-radius:14px;border:1.5px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
 .slot b{font-size:22px;color:var(--ink)}
 .slot.fill{border-style:solid;border-color:var(--gold);background:var(--bg)}
 .cands{display:flex;flex-wrap:wrap;gap:8px}
@@ -137,6 +144,9 @@ tr[data-act]{cursor:pointer}
 .hp1{background:var(--g2)}.hp2{background:var(--g3)}.hp3{background:var(--g);color:#fff}
 .hn1{background:var(--w2)}.hn2{background:var(--w3)}.hn3{background:var(--w);color:#fff}
 td.e{color:var(--line)}
+td.dt{font-size:12px;color:var(--ink)}
+.nol{font-size:11px;color:var(--muted)}
+.dtag{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--g2);color:var(--g);font-size:12px;font-weight:600}
 td.sc{text-align:left;white-space:normal;min-width:110px;font-size:12px;background:transparent}
 td.sc b{color:var(--g)}
 .sorts{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px}
@@ -180,15 +190,20 @@ const CFG = {
 const P = new URLSearchParams(location.search);
 const MOCK = P.has('mock');
 
-const SCENTS = ['綠豆','蛋白','新栽','奶香','花香','果香','清香','蜜香','焙火香'];
+const SCENTS = ['綠豆','蛋白','新栽','奶香','花香','果香','清香','青草香','蜜香','焙火香'];
+// 缺點：分散到聞香、滋味裡，評的當下就能順手點（資料仍存在 defects）
 const DEFECTS = [
-  {k:'菁味', l:'菁味／生', d:'草青、生澀，發酵或走水不足'},
-  {k:'悶味', l:'悶味', d:'不清爽，像悶過頭的熟味'},
-  {k:'水味', l:'水味', d:'湯淡，喝起來像水'},
-  {k:'火味', l:'火味太重', d:'焙火味蓋過茶本身的香'},
-  {k:'雜味', l:'雜味', d:'其他不該有的味道'},
+  {k:'菁味', l:'菁味／生', d:'草青、生澀，發酵或走水不足', at:'aroma'},
+  {k:'悶味', l:'悶味', d:'不清爽，像悶過頭的熟味', at:'aroma'},
+  {k:'火味', l:'火味太重', d:'焙火味蓋過茶本身的香', at:'aroma'},
+  {k:'陳味', l:'陳味', d:'放久了、受潮的舊味（不是刻意陳放的老茶香）', at:'aroma'},
+  {k:'水味', l:'水味', d:'湯淡，喝起來像水', at:'taste'},
+  {k:'雜味', l:'雜味', d:'其他不該有的味道', at:'taste'},
 ];
-const AROMA=['無','淡','中','濃'], BSA=['無','微','中','很'], THICK=['單薄','適中','醇厚'], CLEAR=['清澈明亮','普通','混濁'], AFT=['無','微','明顯'], AFT2=['無','有','明顯'];
+const SWEETS = ['甘蔗甜','冰糖甜','蜜甜','果甜','焦糖甜'];
+const FLORALS = ['蘭花','梔子花','野薑花','桂花','茉莉','玉蘭'];
+const AROMA=['無','淡','中','濃'], BSA=['無','微','中','很'], THICK=['單薄','適中','醇厚'], AFT4=['無','微','中','明顯'];
+const VER = 2; // 評分資料版本：2＝香型三級、餘韻四級、回甘生津合併
 // 湯色：包種茶由淺到深
 const COLORS = [
   {k:'淺綠', c:'#dfe3a8', d:'發酵很輕、很新鮮'},
@@ -200,16 +215,35 @@ const COLORS = [
 ];
 const COLOR_HEX = Object.fromEntries(COLORS.map(x => [x.k, x.c]));
 const SECTIONS = [
-  {t:'聞香', q:[{f:'aroma',l:'香氣強度',v:AROMA,k:'pos'}], scents:true},
-  {t:'湯色', colors:true, q:[{f:'clarity',l:'清澈度',v:CLEAR,k:['pos','zero','neg'],s:'混濁通常是製程或沖泡有問題'}]},
-  {t:'滋味', q:[{f:'bitter',l:'苦',v:BSA,k:'neg'},{f:'astr',l:'澀',v:BSA,k:'neg'},{f:'sweet',l:'甜',v:BSA,k:'pos'},{f:'thick',l:'茶湯厚度',v:THICK,k:['zero','pos','pos'],s:'喝起來空空、水水的選「單薄」'}]},
-  {t:'餘韻', q:[{f:'huigan',l:'回甘',v:AFT,k:'pos'},{f:'huixiang',l:'回香',v:AFT2,k:'pos',s:'吞下後香氣回來'},{f:'shengjin',l:'生津',v:AFT2,k:'pos'}]},
+  {t:'聞香', q:[{f:'aroma',l:'香氣強度',v:AROMA,k:'pos'}], scents:true, defects:'aroma'},
+  {t:'湯色', colors:true, q:[]},
+  {t:'滋味', q:[{f:'bitter',l:'苦',v:BSA,k:'neg'},{f:'astr',l:'澀',v:BSA,k:'neg'},{f:'sweet',l:'甜',v:BSA,k:'pos',sub:{f:'sweetT',o:SWEETS,l:'哪種甜'}},{f:'rushui',l:'香氣入水',v:AROMA,k:'pos',s:'喝的時候茶湯裡有沒有香'},{f:'thick',l:'茶湯厚度',v:THICK,k:['zero','pos','pos'],s:'喝起來空空、水水的選「單薄」'}], defects:'taste'},
+  {t:'餘韻', q:[{f:'huigan',l:'回甘生津',v:AFT4,k:'pos',s:'喉嚨回甜、口中生津'},{f:'huixiang',l:'回香',v:AFT4,k:'pos',s:'吞下後香氣回來',sub:{f:'hxT',o:FLORALS,l:'像什麼花'}}]},
 ];
-const LIKES = [['love','❤️','喜歡'],['ok','👍','還可以'],['no','✕','不愛']];
-const LIKE_EMO = {love:'❤️', ok:'👍', no:'✕'};
+const LIKES = [['love','❤️','超愛'],['good','😋','喜歡'],['ok','👍','還可以'],['meh','😐','普通'],['no','✕','不愛']];
+const LIKE_EMO = {love:'❤️', good:'😋', ok:'👍', meh:'😐', no:'✕'};
+const LIKE_SCORE = {love:5, good:4, ok:3, meh:1, no:0}; // 沒選＝2
 const MEDAL = ['🥇','🥈','🥉'];
 const PHRASES = ['想買','回沖再試','香氣持久','入口滑順','跟前一杯很像'];
-const COLS = [['aroma','香',AROMA,'p'],['bitter','苦',BSA,'n'],['astr','澀',BSA,'n'],['sweet','甜',BSA,'p'],['thick','厚',THICK,'p'],['huigan','甘',AFT,'p'],['huixiang','回香',AFT2,'p'],['shengjin','津',AFT2,'p']];
+const COLS = [['aroma','香',AROMA,'p'],['bitter','苦',BSA,'n'],['astr','澀',BSA,'n'],['sweet','甜',BSA,'p'],['rushui','入水',AROMA,'p'],['thick','厚',THICK,'p'],['huigan','甘津',AFT4,'p'],['huixiang','回香',AFT4,'p']];
+// 舊資料轉新版：香型「濃」2→3；回甘、生津合併成回甘生津；餘韻三級→四級（明顯 2→3）
+function migrate(p){
+  if (!p || (p.ver || 1) >= VER) return p;
+  const up = v => v === 2 ? 3 : v;
+  const ratings = {};
+  for (const [n, r0] of Object.entries(p.ratings || {})){
+    const r = {...r0};
+    if (r.scents){ r.scents = {...r.scents}; for (const k in r.scents) r.scents[k] = up(r.scents[k]) }
+    if (r.body != null){ if (r.thick == null) r.thick = r.body + 1; delete r.body }
+    const hg = r.huigan != null ? up(r.huigan) : null, sj = r.shengjin != null ? up(r.shengjin) : null;
+    if (hg != null || sj != null) r.huigan = Math.max(hg ?? 0, sj ?? 0);
+    delete r.shengjin;
+    if (r.huixiang != null) r.huixiang = up(r.huixiang);
+    delete r.clarity;
+    ratings[n] = r;
+  }
+  return {...p, ratings, ver: VER};
+}
 
 // ===== 小工具 =====
 const $ = s => document.querySelector(s);
@@ -304,7 +338,7 @@ const S = {
   api: null, name: LS.get('tea:name', ''), code: null, sess: null,
   members: {}, me: {ratings: {}, top: []}, players: {},
   cur: 1, view: 'loading', tab: 'mine', sort: 'cup', filter: null,
-  unsubs: [], playersUnsub: null, pendingCode: null, newCups: 20,
+  unsubs: [], playersUnsub: null, pendingCode: null, newCups: 5,
 };
 const isHost = () => S.sess && S.api && S.sess.hostUid === S.api.uid;
 const cupsArr = () => Array.from({length: S.sess?.cups || 0}, (_, i) => i + 1);
@@ -342,7 +376,7 @@ function save(){
     const offT = setTimeout(() => { if (seq === saveSeq) setSave('目前離線，已存在手機，連上網路後會自動同步') }, 3000);
     try {
       const d = doneCount();
-      const jobs = [S.api.savePlayer(S.code, S.api.uid, {name: S.name, ratings: S.me.ratings, top: S.me.top, t: Date.now()})];
+      const jobs = [S.api.savePlayer(S.code, S.api.uid, {name: S.name, ratings: S.me.ratings, top: S.me.top, ver: VER, t: Date.now()})];
       if (d !== lastDone){ lastDone = d; jobs.push(S.api.setMember(S.code, S.api.uid, {name: S.name, done: d, t: Date.now()})) }
       await Promise.all(jobs);
       clearTimeout(offT);
@@ -399,21 +433,21 @@ async function openSession(code, fresh){
   }
   closeSession();
   S.code = code; S.sess = sess;
-  if (player) S.me = {ratings: player.ratings || {}, top: player.top || []};
-  // 舊版「湯感」（普通/飽滿）轉成「茶湯厚度」（適中/醇厚）
-  Object.values(S.me.ratings).forEach(r => { if (r.body != null){ if (r.thick == null) r.thick = r.body + 1; delete r.body } });
+  const needMig = player && (player.ver || 1) < VER;
+  if (player){ player = migrate(player); S.me = {ratings: player.ratings || {}, top: player.top || []} }
   S.cur = Math.min(LS.get('tea:cur:' + code, 1), sess.cups) || 1;
   lastDone = doneCount();
   S.api.setMember(code, S.api.uid, {name: S.name, done: lastDone, t: Date.now()}).catch(console.warn);
   addRecent(code, sess.name);
   setUrl(code);
+  if (needMig) save(); // 舊資料轉好之後存回去
   S.unsubs.push(S.api.watchSession(code, s => {
     if (!s){
       if (S.code === code && !S.deleting){ removeRecent(code); closeSession(); setUrl(null); closeModal(); S.view = 'home'; render(); toast('主揪已經刪除這個場次') }
       return;
     }
     S.sess = s;
-    if (s.revealed && !S.playersUnsub) S.playersUnsub = S.api.watchPlayers(code, m => { S.players = m; if (S.view === 'over') softRender() });
+    if (s.revealed && !S.playersUnsub) S.playersUnsub = S.api.watchPlayers(code, m => { S.players = Object.fromEntries(Object.entries(m).map(([u, p]) => [u, migrate(p)])); if (S.view === 'over') softRender() });
     softRender();
   }));
   S.unsubs.push(S.api.watchMembers(code, m => { S.members = m; if (S.view === 'over') softRender() }));
@@ -422,9 +456,8 @@ async function openSession(code, fresh){
 async function createSession(){
   const name = ($('#nsName')?.value || '').trim() || `${today()} 品茶`;
   const cups = Math.max(1, Math.min(60, S.newCups));
-  // 6 碼有 8 億多種組合，不另外查重複
-  const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  const code = Array.from({length: 6}, () => A[Math.floor(Math.random() * A.length)]).join('');
+  // 6 位數字：手機會跳數字鍵盤比較好輸入；100 萬種組合，撞到別人的場次時規則也不會讓你覆蓋
+  const code = String(Math.floor(Math.random() * 900000) + 100000);
   const data = {name, cups, blind: false, revealed: false, hostUid: S.api.uid, hostName: S.name, cupInfo: {}, createdAt: Date.now()};
   // 不等伺服器確認，先進場次；資料會在背景同步
   S.api.createSession(code, data).catch(e => { console.warn(e); toast('場次同步失敗，請檢查網路') });
@@ -467,18 +500,18 @@ function viewName(){
 
 function viewHome(){
   const recent = LS.get('tea:recent', []);
-  const qk = [10, 15, 20, 25];
+  const qk = [5, 10, 15, 20, 25];
   return `${MOCK ? '<div class="banner">模擬模式：資料只存在這台裝置，不會上傳</div>' : ''}
   <div class="brand"><button class="themebtn" data-act="theme">${({auto: '🌓 跟著手機', light: '☀️ 淺色', dark: '🌙 深色'})[getTheme()]}</button><h1>品茶評分</h1><p>${S.name ? `嗨，${esc(S.name)}　<button data-act="rename" style="color:var(--g);font-size:14px">改名字</button>` : ''}</p></div>
   <div class="card">
     <h2>開新場次</h2>
     <div class="field"><label>場次名稱</label><input type="text" id="nsName" placeholder="${today()} 品茶" maxlength="30"></div>
     <div class="field"><label>今天喝幾杯（之後還能加）</label>
+      <div class="qk">${qk.map(n => `<button class="${S.newCups === n ? 'on' : ''}" data-act="ncSet" data-n="${n}">${n}</button>`).join('')}</div>
       <div class="stepper">
-        <button class="pm" data-act="nc" data-d="-1">－</button>
-        <div class="num" id="ncNum">${S.newCups}</div>
-        <button class="pm" data-act="nc" data-d="1">＋</button>
-        <div class="qk">${qk.map(n => `<button class="${S.newCups === n ? 'on' : ''}" data-act="ncSet" data-n="${n}">${n}</button>`).join('')}</div>
+        <button class="pm" data-act="nc" data-d="-1" aria-label="少一杯">－</button>
+        <div class="num" id="ncNum">${S.newCups} <small>杯</small></div>
+        <button class="pm" data-act="nc" data-d="1" aria-label="多一杯">＋</button>
       </div>
     </div>
     <p class="hint" style="margin:0 0 12px">預設盲喝：製作日期最後揭曉時才填、才公布</p>
@@ -486,16 +519,26 @@ function viewHome(){
   </div>
   <div class="card">
     <h2>加入朋友的場次</h2>
-    <div class="field"><input type="text" id="jnCode" placeholder="輸入 6 碼代碼" maxlength="6" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.2em"></div>
+    <p class="hint" style="margin:0 0 10px">最快：用手機相機掃主揪畫面上的 QR Code，或直接點主揪傳的連結</p>
+    <div class="field"><input type="text" id="jnCode" placeholder="或輸入 6 位數字代碼" maxlength="6" inputmode="numeric" autocomplete="off" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.2em"></div>
     <button class="btn ghost" data-act="join">加入</button>
+    <p class="hint">輸滿 6 碼會自動加入</p>
   </div>
   ${recent.length ? `<div class="card recent"><h2>最近的場次</h2>${recent.map(x => `<div class="rrow"><button data-act="open" data-code="${esc(x.code)}"><span>${esc(x.name)}</span><small>${esc(x.code)}</small></button><button class="rx" data-act="forget" data-code="${esc(x.code)}" aria-label="從清單移除">✕</button></div>`).join('')}<p class="hint">按 ✕ 只是從這支手機的清單移除，不會刪掉場次</p></div>` : ''}`;
 }
 
 function seg(r, q){
   const v = r[q.f];
+  // 小選項（哪種甜、像什麼花）：選了「微」以上才出現，可複選
+  const sub = q.sub && v > 0 ? `<div class="subq"><span>${q.sub.l}</span>${q.sub.o.map(k => `<button class="mini ${(r[q.sub.f] || {})[k] ? 'on' : ''}" data-act="tog" data-f="${q.sub.f}" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>` : '';
   return `<div class="q"><div class="ql"><span>${q.l}</span>${q.s ? `<small>${q.s}</small>` : ''}</div>
-  <div class="seg">${q.v.map((lab, i) => `<button class="${v === i ? 'on ' + (Array.isArray(q.k) ? q.k[i] : i === 0 ? 'zero' : q.k) : ''}" data-act="seg" data-f="${q.f}" data-v="${i}">${lab}</button>`).join('')}</div></div>`;
+  <div class="seg">${q.v.map((lab, i) => `<button class="${v === i ? 'on ' + (Array.isArray(q.k) ? q.k[i] : i === 0 ? 'zero' : q.k) : ''}" data-act="seg" data-f="${q.f}" data-v="${i}">${lab}</button>`).join('')}</div>${sub}</div>`;
+}
+function defectRow(r, at){
+  const list = DEFECTS.filter(d => d.at === at);
+  return `<div class="q"><div class="ql"><span>缺點</span><small>點一下＝微，兩下＝明顯，三下取消</small></div>
+  <div class="chips">${list.map(d => chip(r.defects, d.k, d.l, 'neg', 'defects')).join('')}</div>
+  <details class="hint"><summary>這些缺點是什麼</summary>${list.map(d => `<p><b>${d.l}</b>：${d.d}</p>`).join('')}</details></div>`;
 }
 function colorPicker(r){
   return `<div class="q"><div class="ql"><span>顏色</span><small>點一下選，再點一下取消</small></div>
@@ -504,7 +547,7 @@ function colorPicker(r){
 }
 function chip(map, key, label, kind, f){
   const lv = (map || {})[key] || 0;
-  const sfx = lv ? (kind === 'pos' ? ['', '淡', '濃'] : ['', '微', '明顯'])[lv] : '';
+  const sfx = lv ? (kind === 'pos' ? ['', '淡', '中', '濃'] : ['', '微', '明顯'])[lv] : '';
   return `<button class="chip ${kind} l${lv}" data-act="chip" data-f="${f}" data-k="${esc(key)}">${esc(label)}${sfx ? `<em>${sfx}</em>` : ''}</button>`;
 }
 function allScents(){
@@ -523,8 +566,9 @@ function viewRate(){
   const secs = SECTIONS.map(sec => `<section class="card"><h2>${sec.t}</h2>
     ${sec.colors ? colorPicker(r) : ''}
     ${sec.q.map(q => seg(r, q)).join('')}
-    ${sec.scents ? `<div class="q"><div class="ql"><span>香型</span><small>點一下＝淡，兩下＝濃，三下取消</small></div>
+    ${sec.scents ? `<div class="q"><div class="ql"><span>香型</span><small>點一下＝淡，再點＝中、濃，第四下取消</small></div>
       <div class="chips">${allScents().map(k => chip(r.scents, k, k, 'pos', 'scents')).join('')}<button class="chip add" data-act="addScent">＋ 自訂</button></div></div>` : ''}
+    ${sec.defects ? defectRow(r, sec.defects) : ''}
   </section>`).join('');
   return `<header class="top">
     <button class="icon" data-act="menu" aria-label="選單">☰</button>
@@ -534,12 +578,9 @@ function viewRate(){
   <main id="rate">
     <div class="meta">${meta}</div>
     ${secs}
-    <section class="card"><h2>缺點</h2>
-      <div class="chips">${DEFECTS.map(d => chip(r.defects, d.k, d.l, 'neg', 'defects')).join('')}</div>
-      <details class="hint"><summary>點一下＝微，兩下＝明顯，三下取消（看說明）</summary>${DEFECTS.map(d => `<p><b>${d.l}</b>：${d.d}</p>`).join('')}</details>
-    </section>
     <section class="card"><h2>整體感覺</h2>
       <div class="like">${LIKES.map(([k, e, l]) => `<button class="${r.like === k ? 'on ' + k : ''}" data-act="like" data-v="${k}"><span>${e}</span>${l}</button>`).join('')}</div>
+      ${rated(r) && !r.like ? '<p class="hint" style="color:var(--w)">還沒選整體感覺，選了才會算進大家的排名</p>' : ''}
     </section>
     <section class="card"><h2>備註</h2>
       <div class="phr">${PHRASES.map(p => `<button data-act="phrase" data-p="${p}">＋${p}</button>`).join('')}</div>
@@ -566,52 +607,56 @@ function cellFor(r, c){
 function sortedCups(){
   const arr = cupsArr();
   const top = S.me.top.map(Number);
-  const likeScore = r => ({love: 3, ok: 2, no: 0})[r.like] ?? 1;
+  const likeScore = r => LIKE_SCORE[r.like] ?? 2;
   const num = (r, f) => r[f] ?? -1;
   const by = {
     cup: () => 0,
     like: (a, b) => { const ta = top.indexOf(a), tb = top.indexOf(b); if (ta !== tb) return (ta < 0 ? 9 : ta) - (tb < 0 ? 9 : tb); return likeScore(R(b)) - likeScore(R(a)) },
     aroma: (a, b) => num(R(b), 'aroma') - num(R(a), 'aroma'),
     clean: (a, b) => { const f = r => r.bitter == null && r.astr == null ? 99 : (r.bitter || 0) + (r.astr || 0); return f(R(a)) - f(R(b)) },
-    after: (a, b) => { const f = r => (r.huigan || 0) + (r.huixiang || 0) + (r.shengjin || 0); return f(R(b)) - f(R(a)) },
+    after: (a, b) => { const f = r => (r.huigan || 0) + (r.huixiang || 0); return f(R(b)) - f(R(a)) },
   }[S.sort] || (() => 0);
   let list = arr.slice().sort((a, b) => by(a, b) || a - b);
   if (S.filter) list = list.filter(n => (R(n).scents || {})[S.filter]);
   return list;
 }
 
+const dateOf = n => S.sess?.revealed ? ((S.sess.cupInfo || {})[n]?.date || '') : '';
+const hasDates = () => S.sess?.revealed && cupsArr().some(n => dateOf(n));
 function viewMine(){
   const top = S.me.top.map(Number);
-  const loves = cupsArr().filter(n => R(n).like === 'love');
-  const oks = cupsArr().filter(n => R(n).like === 'ok');
-  const slots = [0, 1, 2].map(i => top[i] ? `<button class="slot fill" data-act="unpick" data-n="${top[i]}">${MEDAL[i]}<b>${top[i]}</b>點一下移除</button>` : `<div class="slot">${MEDAL[i]}<span>還沒選</span></div>`).join('');
+  // 依整體感覺分組，❤️ 最前面；✕ 不愛的不列
+  const groups = LIKES.filter(([k]) => k !== 'no').map(([k, e, l]) => [e + ' ' + l, cupsArr().filter(n => R(n).like === k)]).filter(([, list]) => list.length);
+  const slots = [0, 1, 2].map(i => top[i] ? `<button class="slot fill" data-act="unpick" data-n="${top[i]}">${MEDAL[i]}<b>${top[i]}</b>點一下移除</button>` : `<button class="slot" data-act="pickSheet">${MEDAL[i]}<span>點這裡選</span></button>`).join('');
   const cand = list => list.map(n => `<button class="cand ${top.includes(n) ? 'picked' : ''}" data-act="pick" data-n="${n}">${n}</button>`).join('');
   const scentsUsed = [...new Set(cupsArr().flatMap(n => Object.keys(R(n).scents || {})))];
   const sorts = [['cup', '杯號'], ['like', '喜好'], ['aroma', '香氣濃'], ['clean', '苦澀少'], ['after', '餘韻強']];
+  const dates = hasDates();
   const rows = sortedCups().map(n => {
     const r = R(n), ti = top.indexOf(n);
     const defs = Object.entries(r.defects || {});
     const maxD = defs.reduce((m, [, v]) => Math.max(m, v), 0);
-    const sc = Object.entries(r.scents || {}).map(([k, v]) => v === 2 ? `<b>${esc(k)}</b>` : esc(k)).join('、');
+    const sc = [Object.entries(r.scents || {}).map(([k, v]) => v === 3 ? `<b>${esc(k)}</b>` : esc(k)).join('、'),
+      ...Object.keys(r.sweetT || {}).map(esc), ...Object.keys(r.hxT || {}).map(k => '回' + esc(k))].filter(Boolean).join('、');
     return `<tr data-act="go" data-n="${n}"><td class="cn">${n}${ti >= 0 ? MEDAL[ti] : ''}</td>
+      ${dates ? `<td class="dt">${esc(dateOf(n)) || '·'}</td>` : ''}
       <td>${LIKE_EMO[r.like] || '<span style="color:var(--line)">·</span>'}</td>
-      <td class="${r.color ? '' : 'e'}">${r.color ? `<i class="dot" style="background:${COLOR_HEX[r.color] || '#ccc'}"></i>${r.clarity === 2 ? '<small>濁</small>' : ''}` : '·'}</td>
+      <td class="${r.color ? '' : 'e'}">${r.color ? `<i class="dot" style="background:${COLOR_HEX[r.color] || '#ccc'}"></i>` : '·'}</td>
       ${COLS.map(c => cellFor(r, c)).join('')}
       <td class="${defs.length ? 'hn' + (maxD === 2 ? 3 : 1) : 'e'}">${defs.length ? defs.map(([k]) => k[0]).join('') : '·'}</td>
       <td class="sc">${sc}</td></tr>`;
   }).join('');
   return `<section class="card"><h2>我的前三名</h2>
     <div class="slots">${slots}</div>
-    ${loves.length || oks.length ? `
-      ${loves.length ? `<div class="sub">❤️ 喜歡的杯子，依序點選第一、二、三名</div><div class="cands">${cand(loves)}</div>` : ''}
-      ${oks.length ? `<div class="sub">👍 還可以</div><div class="cands">${cand(oks)}</div>` : ''}`
-      : '<div class="empty">在每一杯點「❤️ 喜歡」或「👍 還可以」，這裡就會出現可以選的杯子</div>'}
+    <p class="hint">點下面的杯號，會依序填進 🥇🥈🥉；也可以點上面的框，從全部杯子裡挑</p>
+    ${groups.length ? groups.map(([lab, list]) => `<div class="sub">${lab}</div><div class="cands">${cand(list)}</div>`).join('')
+      : '<div class="empty">每一杯選了整體感覺，這裡就會依喜好排好讓你挑</div>'}
   </section>
   <section class="card"><h2>每杯比一比</h2>
     <div class="sorts">${sorts.map(([k, l]) => `<button class="${S.sort === k ? 'on' : ''}" data-act="sort" data-k="${k}">${l}</button>`).join('')}</div>
     ${scentsUsed.length ? `<div class="sorts"><button class="${!S.filter ? 'on' : ''}" data-act="filter" data-k="">全部香型</button>${scentsUsed.map(k => `<button class="${S.filter === k ? 'on' : ''}" data-act="filter" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>` : ''}
     <div class="tw"><table>
-      <thead><tr><th>杯</th><th>感覺</th><th>湯色</th>${COLS.map(c => `<th>${c[1]}</th>`).join('')}<th>缺點</th><th style="text-align:left">香型</th></tr></thead>
+      <thead><tr><th>杯</th>${dates ? '<th>製作日期</th>' : ''}<th>感覺</th><th>湯色</th>${COLS.map(c => `<th>${c[1]}</th>`).join('')}<th>缺點</th><th style="text-align:left">香型</th></tr></thead>
       <tbody>${rows || ''}</tbody>
     </table></div>
     ${!rows ? '<div class="empty">沒有符合的杯子</div>' : ''}
@@ -623,25 +668,31 @@ function crowd(){
   const players = Object.values(S.players);
   const rows = cupsArr().map(n => {
     const k = String(n);
-    let pts = 0, love = 0, ok = 0, no = 0, raters = 0;
-    const medals = [], sc = {}, likes = [];
+    let pts = 0, raters = 0;
+    const cnt = {love: 0, good: 0, ok: 0, meh: 0, no: 0};
+    const medals = [], sc = {}, cells = [];
     players.forEach(p => {
       const r = (p.ratings || {})[k];
       const ti = (p.top || []).map(String).indexOf(k);
       if (ti >= 0 && ti < 3){ pts += 3 - ti; medals.push(MEDAL[ti] + esc(p.name)) }
       if (r && rated(r)){
         raters++;
-        if (r.like === 'love') love++; else if (r.like === 'ok') ok++; else if (r.like === 'no') no++;
+        if (r.like in cnt) cnt[r.like]++;
         Object.keys(r.scents || {}).forEach(s => sc[s] = (sc[s] || 0) + 1);
       }
-      likes.push([p.name, r?.like, ti]);
+      cells.push({r: r && rated(r) ? r : null, ti});
     });
     const consensus = Object.entries(sc).filter(([, c]) => raters && c >= Math.max(2, Math.ceil(raters / 2))).sort((a, b) => b[1] - a[1]).map(([s]) => s);
-    return {n, pts, love, ok, no, raters, medals, consensus, likes};
+    return {n, pts, ...cnt, cnt, raters, medals, consensus, cells};
   });
   return {players, rows};
 }
 
+function lvCell(v, labs, k){
+  if (v == null) return ['e', '－'];
+  const lv = labs.length === 3 ? [0, 2, 3][v] : v;
+  return [`h${k}${lv}`, labs[v]];
+}
 function viewAll(){
   const s = S.sess, mem = Object.entries(S.members);
   const total = s.cups;
@@ -657,21 +708,40 @@ function viewAll(){
     </section>`;
   }
   const {players, rows} = crowd();
-  const rank = rows.filter(x => x.pts || x.love).sort((a, b) => b.pts - a.pts || b.love - a.love || b.ok - a.ok || a.n - b.n);
-  const contro = rows.filter(x => x.love && x.no);
+  // 排名：前三名分數 → ❤️ 數 → 😋 數 → 👍 數
+  const rank = rows.filter(x => x.pts || x.love || x.good).sort((a, b) => b.pts - a.pts || b.love - a.love || b.good - a.good || b.ok - a.ok || a.n - b.n);
+  const contro = rows.filter(x => (x.love || x.good) && x.no);
+  const likeLine = x => LIKES.filter(([k]) => x.cnt[k]).map(([k, e]) => `${e} ${x.cnt[k]}`).join('　') || '還沒有人選感覺';
   const rkHtml = rank.length ? rank.map((x, i) => `<div class="rk" data-act="go" data-n="${x.n}">
       <div class="no"><small>第 ${i + 1} 名</small>${x.n}</div>
-      <div class="bd"><b>第 ${x.n} 杯</b>${(s.cupInfo || {})[x.n]?.date ? `　${esc(s.cupInfo[x.n].date)}` : ''}<br>
-        ❤️ ${x.love}　👍 ${x.ok}　✕ ${x.no}${x.consensus.length ? `<br>大家都聞到：${x.consensus.map(esc).join('、')}` : ''}
+      <div class="bd"><b>第 ${x.n} 杯</b>${dateOf(x.n) ? `　<span class="dtag">${esc(dateOf(x.n))}</span>` : ''}<br>
+        ${likeLine(x)}${x.consensus.length ? `<br>大家都聞到：${x.consensus.map(esc).join('、')}` : ''}
         ${x.medals.length ? `<br>${x.medals.join('　')}` : ''}</div>
-      <div class="pts">${x.pts}<small>分</small></div></div>`).join('') : '<div class="empty">還沒有人選前三名或按 ❤️</div>';
-  const names = players.map(p => p.name);
-  const detail = `<div class="tw"><table><thead><tr><th>杯</th>${names.map(nm => `<th>${esc(nm)}</th>`).join('')}</tr></thead><tbody>
-    ${rows.map(x => `<tr data-act="go" data-n="${x.n}"><td class="cn">${x.n}</td>${x.likes.map(([, l, ti]) => `<td>${ti >= 0 && ti < 3 ? MEDAL[ti] : ''}${LIKE_EMO[l] || '<span style="color:var(--line)">·</span>'}</td>`).join('')}</tr>`).join('')}
-  </tbody></table></div>`;
-  return `<section class="card"><h2>綜合排名</h2>${rkHtml}<p class="hint">🥇 3 分、🥈 2 分、🥉 1 分，同分看 ❤️ 數</p></section>
-    ${contro.length ? `<section class="card"><h2>爭議杯</h2><p style="margin:0;font-size:15px">有人 ❤️ 也有人 ✕：${contro.map(x => `<b>第 ${x.n} 杯</b>`).join('、')}</p></section>` : ''}
-    <section class="card"><h2>每個人的感覺</h2>${detail}</section>
+      <div class="pts">${x.pts}<small>分</small></div></div>`).join('') : '<div class="empty">還沒有人選前三名或按 ❤️ 😋</div>';
+  // 每個人的對照表：可以切換看感覺、香氣、甜、餘韻、缺點
+  const MET = {
+    like: ['感覺', c => `${c.ti >= 0 && c.ti < 3 ? MEDAL[c.ti] : ''}${LIKE_EMO[c.r.like] || ''}` || '<span class="nol">評了</span>'],
+    aroma: ['香氣', c => lvCell(c.r.aroma, AROMA, 'p')],
+    sweet: ['甜', c => lvCell(c.r.sweet, BSA, 'p')],
+    after: ['回甘生津', c => lvCell(c.r.huigan, AFT4, 'p')],
+    hx: ['回香', c => lvCell(c.r.huixiang, AFT4, 'p')],
+    def: ['缺點', c => { const d = Object.entries(c.r.defects || {}); return d.length ? [`hn${d.some(([, v]) => v === 2) ? 3 : 1}`, d.map(([k]) => k[0]).join('')] : ['hp0', '無'] }],
+  };
+  const met = MET[S.met] ? S.met : 'like';
+  const cellHtml = c => {
+    if (!c.r) return `<td class="e">${c.ti >= 0 && c.ti < 3 ? MEDAL[c.ti] : '·'}</td>`;
+    const out = MET[met][1](c);
+    return Array.isArray(out) ? `<td class="${out[0]}">${out[1]}</td>` : `<td>${out}</td>`;
+  };
+  const dates = hasDates();
+  const detail = `<div class="sorts">${Object.entries(MET).map(([k, [l]]) => `<button class="${met === k ? 'on' : ''}" data-act="met" data-k="${k}">${l}</button>`).join('')}</div>
+    <div class="tw"><table><thead><tr><th>杯</th>${dates ? '<th>製作日期</th>' : ''}${players.map(p => `<th>${esc(p.name)}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map(x => `<tr data-act="go" data-n="${x.n}"><td class="cn">${x.n}</td>${dates ? `<td class="dt">${esc(dateOf(x.n)) || '·'}</td>` : ''}${x.cells.map(cellHtml).join('')}</tr>`).join('')}
+  </tbody></table></div>
+  <p class="hint">「評了」＝有評分但沒選整體感覺；「·」＝這杯沒評。上面可以切換看香氣、甜、餘韻、缺點</p>`;
+  return `<section class="card"><h2>綜合排名</h2>${rkHtml}<p class="hint">🥇 3 分、🥈 2 分、🥉 1 分；同分依序看 ❤️、😋、👍 的人數</p></section>
+    ${contro.length ? `<section class="card"><h2>爭議杯</h2><p style="margin:0;font-size:15px">有人 ❤️／😋 也有人 ✕：${contro.map(x => `<b>第 ${x.n} 杯</b>`).join('、')}</p></section>` : ''}
+    <section class="card"><h2>每個人的評分</h2>${detail}</section>
     <section class="card"><h2>參加的人（${mem.length}）</h2>${memList}</section>`;
 }
 
@@ -694,6 +764,13 @@ function openGrid(){
   modal(`<h3>跳到第幾杯<button data-act="close">✕</button></h3>
     <div class="grid">${cupsArr().map(i => { const r = R(i); return `<button class="gcell ${rated(r) ? 'done' : ''} ${i === S.cur ? 'cur' : ''}" data-act="go" data-n="${i}">${i}<i>${LIKE_EMO[r.like] || ''}</i></button>` }).join('')}</div>
     <p class="legend">綠底＝評過了　❤️👍✕＝整體感覺</p>`);
+}
+function openPickSheet(){
+  const top = S.me.top.map(Number);
+  const list = cupsArr().filter(n => !top.includes(n) && R(n).like !== 'no').sort((a, b) => (LIKE_SCORE[R(b).like] ?? 2) - (LIKE_SCORE[R(a).like] ?? 2) || a - b);
+  modal(`<h3>選第 ${top.length + 1} 名 ${MEDAL[top.length] || ''}<button data-act="close">✕</button></h3>
+    <div class="grid">${list.map(i => `<button class="gcell ${rated(R(i)) ? 'done' : ''}" data-act="pickGo" data-n="${i}">${i}<i>${LIKE_EMO[R(i).like] || ''}</i></button>`).join('')}</div>
+    <p class="legend">依整體感覺排好了，喜歡的在前面</p>`);
 }
 function openMenu(){
   const s = S.sess;
@@ -746,8 +823,18 @@ const ACT = {
   create(){ createSession() },
   join(){ const c = ($('#jnCode').value || '').trim(); if (c.length < 6) return toast('代碼是 6 碼'); openSession(c) },
   open(b){ openSession(b.dataset.code) },
-  seg(b){ const f = b.dataset.f, v = Number(b.dataset.v); upd(r => { if (r[f] === v) delete r[f]; else r[f] = v }); render() },
-  chip(b){ const f = b.dataset.f, k = b.dataset.k; upd(r => { const m = r[f] || (r[f] = {}); const lv = ((m[k] || 0) + 1) % 3; if (lv) m[k] = lv; else delete m[k]; if (!Object.keys(m).length) delete r[f] }); render() },
+  seg(b){
+    const f = b.dataset.f, v = Number(b.dataset.v);
+    upd(r => {
+      if (r[f] === v) delete r[f]; else r[f] = v;
+      // 甜、回香改成「無」或取消時，小選項一起清掉
+      const sub = {sweet: 'sweetT', huixiang: 'hxT'}[f];
+      if (sub && !(r[f] > 0)) delete r[sub];
+    });
+    render();
+  },
+  chip(b){ const f = b.dataset.f, k = b.dataset.k, max = f === 'scents' ? 3 : 2; upd(r => { const m = r[f] || (r[f] = {}); const lv = ((m[k] || 0) + 1) % (max + 1); if (lv) m[k] = lv; else delete m[k]; if (!Object.keys(m).length) delete r[f] }); render() },
+  tog(b){ const f = b.dataset.f, k = b.dataset.k; upd(r => { const m = r[f] || (r[f] = {}); if (m[k]) delete m[k]; else m[k] = 1; if (!Object.keys(m).length) delete r[f] }); render() },
   addScent(){ const v = (prompt('自訂香型（例：桂花）') || '').trim().replace(/[.\/\[\]*`~]/g, ''); if (!v) return; upd(r => { (r.scents || (r.scents = {}))[v] = 1 }); render() },
   like(b){ const v = b.dataset.v; upd(r => { if (r.like === v) delete r.like; else r.like = v }); if (v === 'no') S.me.top = S.me.top.filter(x => Number(x) !== S.cur); render() },
   phrase(b){ const ta = $('#note'); const cur = ta.value.trim(); ta.value = cur ? cur + '，' + b.dataset.p : b.dataset.p; upd(r => r.note = ta.value); render() },
@@ -761,6 +848,9 @@ const ACT = {
   back(){ S.view = 'rate'; render() },
   tab(b){ S.tab = b.dataset.k; render() },
   sort(b){ S.sort = b.dataset.k; render() },
+  met(b){ S.met = b.dataset.k; render() },
+  pickSheet(){ openPickSheet() },
+  pickGo(b){ ACT.pick(b); closeModal() },
   filter(b){ S.filter = b.dataset.k || null; render() },
   pick(b){ const n = Number(b.dataset.n); let t = S.me.top.map(Number); if (t.includes(n)) t = t.filter(x => x !== n); else { if (t.length >= 3) return toast('前三名已選滿，先點上面的名次移除'); t.push(n) } S.me.top = t; save(); render() },
   unpick(b){ const n = Number(b.dataset.n); S.me.top = S.me.top.map(Number).filter(x => x !== n); save(); render() },
@@ -807,7 +897,16 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   if (e.target.id === 'note'){ const v = e.target.value; upd(r => { if (v) r.note = v; else delete r.note }) }
+  if (e.target.id === 'jnCode' && e.target.value.trim().length === 6){ e.target.blur(); ACT.join() }
 });
+// 打字時鍵盤會把底部杯號列頂到畫面中間（iPhone 的老問題），打字時先藏起來
+document.addEventListener('focusin', e => { if (e.target.matches('input,textarea')) document.body.classList.add('kb') });
+document.addEventListener('focusout', () => setTimeout(() => {
+  const a = document.activeElement;
+  if (!(a && a.matches('input,textarea'))){ document.body.classList.remove('kb'); window.scrollTo(window.scrollX, window.scrollY) }
+}, 100));
+// 鍵盤收起後畫面高度變回來時，讓 iPhone 重新排一次固定在底部的列
+if (window.visualViewport) visualViewport.addEventListener('resize', () => { if (!document.body.classList.contains('kb')) window.scrollTo(window.scrollX, window.scrollY) });
 document.addEventListener('change', e => {
   if (e.target.classList.contains('cupdate') && isHost()){
     const n = e.target.dataset.n, v = e.target.value.trim();
@@ -821,7 +920,7 @@ document.addEventListener('keydown', e => {
 // 左右滑動切換杯子
 let tx = null, ty = 0;
 document.addEventListener('touchstart', e => {
-  if (S.view !== 'rate' || e.target.closest('textarea,input,.strip,.chips,.tw')) { tx = null; return }
+  if (S.view !== 'rate' || e.target.closest('textarea,input,.strip,.chips,.subq,.tw,.sorts')) { tx = null; return }
   tx = e.touches[0].clientX; ty = e.touches[0].clientY;
 }, {passive: true});
 document.addEventListener('touchend', e => {
