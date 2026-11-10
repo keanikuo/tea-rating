@@ -763,7 +763,7 @@ $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeM
 function openGrid(){
   modal(`<h3>跳到第幾杯<button data-act="close">✕</button></h3>
     <div class="grid">${cupsArr().map(i => { const r = R(i); return `<button class="gcell ${rated(r) ? 'done' : ''} ${i === S.cur ? 'cur' : ''}" data-act="go" data-n="${i}">${i}<i>${LIKE_EMO[r.like] || ''}</i></button>` }).join('')}</div>
-    <p class="legend">綠底＝評過了　❤️👍✕＝整體感覺</p>`);
+    <p class="legend">綠底＝評過了　❤️😋👍😐✕＝整體感覺</p>`);
 }
 function openPickSheet(){
   const top = S.me.top.map(Number);
