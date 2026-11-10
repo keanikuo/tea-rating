@@ -193,7 +193,7 @@ const CFG = {
 const P = new URLSearchParams(location.search);
 const MOCK = P.has('mock');
 
-const SCENTS = ['綠豆','蛋白','新栽','奶香','花香','果香','清香','青草香','蜜香','焙火香'];
+const SCENTS = ['綠豆','蛋白','新栽','奶香','花香','果香','青草香','蜜香','焙火香'];
 // 缺點：分散到聞香、滋味裡，評的當下就能順手點（資料仍存在 defects）
 const DEFECTS = [
   {k:'菁味', l:'菁味／生', d:'草青、生澀，發酵或走水不足', at:'aroma'},
@@ -203,7 +203,7 @@ const DEFECTS = [
   {k:'水味', l:'水味', d:'湯淡，喝起來像水', at:'taste'},
   {k:'雜味', l:'雜味', d:'其他不該有的味道', at:'taste'},
 ];
-const SWEETS = ['甘蔗甜','冰糖甜','蜜甜','果甜','焦糖甜'];
+const SWEETS = ['甘蔗','冰糖','蜂蜜','水果','焦糖'];
 const FLORALS = ['蘭花','梔子花','野薑花','桂花','茉莉','玉蘭'];
 const AROMA=['無','淡','中','濃'], BSA=['無','微','中','很'], THICK=['單薄','適中','醇厚'], AFT4=['無','微','中','明顯'];
 const VER = 2; // 評分資料版本：2＝香型三級、餘韻四級、回甘生津合併
@@ -551,13 +551,11 @@ function seg(r, q){
 function defectRow(r, at){
   const list = DEFECTS.filter(d => d.at === at);
   return `<div class="q"><div class="ql"><span>缺點</span><small>點一下＝微，兩下＝明顯，三下取消</small></div>
-  <div class="chips">${list.map(d => chip(r.defects, d.k, d.l, 'neg', 'defects')).join('')}</div>
-  <details class="hint"><summary>這些缺點是什麼</summary>${list.map(d => `<p><b>${d.l}</b>：${d.d}</p>`).join('')}</details></div>`;
+  <div class="chips">${list.map(d => chip(r.defects, d.k, d.l, 'neg', 'defects')).join('')}</div></div>`;
 }
 function colorPicker(r){
   return `<div class="q"><div class="ql"><span>顏色</span><small>點一下選，再點一下取消</small></div>
-  <div class="swatches">${COLORS.map(x => `<button class="sw ${r.color === x.k ? 'on' : ''}" data-act="color" data-k="${x.k}"><i style="background:${x.c}"></i>${x.k}</button>`).join('')}</div>
-  <details class="hint"><summary>各顏色通常代表什麼</summary>${COLORS.map(x => `<p><b>${x.k}</b>：${x.d}</p>`).join('')}</details></div>`;
+  <div class="swatches">${COLORS.map(x => `<button class="sw ${r.color === x.k ? 'on' : ''}" data-act="color" data-k="${x.k}"><i style="background:${x.c}"></i>${x.k}</button>`).join('')}</div></div>`;
 }
 function chip(map, key, label, kind, f){
   const lv = (map || {})[key] || 0;
