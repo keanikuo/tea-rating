@@ -220,8 +220,8 @@ const COLOR_HEX = Object.fromEntries(COLORS.map(x => [x.k, x.c]));
 const SECTIONS = [
   {t:'聞香', q:[{f:'aroma',l:'香氣強度',v:AROMA,k:'pos'}], scents:true, defects:'aroma'},
   {t:'湯色', colors:true, q:[]},
-  {t:'滋味', q:[{f:'bitter',l:'苦',v:BSA,k:'neg'},{f:'astr',l:'澀',v:BSA,k:'neg'},{f:'sweet',l:'甜',v:BSA,k:'pos',sub:{f:'sweetT',o:SWEETS,l:'哪種甜'}},{f:'rushui',l:'香氣入水',v:AROMA,k:'pos',s:'喝的時候茶湯裡有沒有香'},{f:'thick',l:'茶湯厚度',v:THICK,k:['zero','pos','pos'],s:'喝起來空空、水水的選「單薄」'}], defects:'taste'},
-  {t:'餘韻', q:[{f:'huigan',l:'回甘生津',v:AFT4,k:'pos',s:'喉嚨回甜、口中生津'},{f:'huixiang',l:'回香',v:AFT4,k:'pos',s:'吞下後香氣回來',sub:{f:'hxT',o:FLORALS,l:'像什麼花'}}]},
+  {t:'滋味', q:[{f:'bitter',l:'苦',v:BSA,k:'neg'},{f:'astr',l:'澀',v:BSA,k:'neg'},{f:'sweet',l:'甜',v:BSA,k:'pos'},{f:'rushui',l:'香氣入水',v:AROMA,k:'pos',s:'喝的時候茶湯裡有沒有香'},{f:'thick',l:'茶湯厚度',v:THICK,k:['zero','pos','pos'],s:'喝起來空空、水水的選「單薄」'}], defects:'taste'},
+  {t:'餘韻', q:[{f:'huigan',l:'回甘生津',v:AFT4,k:'pos',s:'喉嚨回甜、口中生津'},{f:'huixiang',l:'回香',v:AFT4,k:'pos',s:'吞下後香氣回來'}]},
 ];
 const LIKES = [['love','❤️','超愛'],['good','😋','喜歡'],['ok','👍','還可以'],['meh','😐','普通'],['no','✕','不愛']];
 const LIKE_EMO = {love:'❤️', good:'😋', ok:'👍', meh:'😐', no:'✕'};
@@ -543,10 +543,8 @@ function viewHome(){
 
 function seg(r, q){
   const v = r[q.f];
-  // 小選項（哪種甜、像什麼花）：選了「微」以上才出現，可複選
-  const sub = q.sub && v > 0 ? `<div class="subq"><span>${q.sub.l}</span>${q.sub.o.map(k => `<button class="mini ${(r[q.sub.f] || {})[k] ? 'on' : ''}" data-act="tog" data-f="${q.sub.f}" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>` : '';
   return `<div class="q"><div class="ql"><span>${q.l}</span>${q.s ? `<small>${q.s}</small>` : ''}</div>
-  <div class="seg">${q.v.map((lab, i) => `<button class="${v === i ? 'on ' + (Array.isArray(q.k) ? q.k[i] : i === 0 ? 'zero' : q.k) : ''}" data-act="seg" data-f="${q.f}" data-v="${i}">${lab}</button>`).join('')}</div>${sub}</div>`;
+  <div class="seg">${q.v.map((lab, i) => `<button class="${v === i ? 'on ' + (Array.isArray(q.k) ? q.k[i] : i === 0 ? 'zero' : q.k) : ''}" data-act="seg" data-f="${q.f}" data-v="${i}">${lab}</button>`).join('')}</div></div>`;
 }
 function defectRow(r, at){
   const list = DEFECTS.filter(d => d.at === at);
@@ -590,6 +588,10 @@ function viewRate(){
   <main id="rate">
     <div class="meta">${meta}</div>
     ${secs}
+    <section class="card"><h2>額外備註</h2>
+      <p class="hint" style="margin:0 0 4px">分辨得出來再點就好，不用每杯都填</p>
+      ${[['sweetT', SWEETS, '甜感像'], ['hxT', FLORALS, '回香像']].map(([f, o, l]) => `<div class="subq"><span>${l}</span>${o.map(k => `<button class="mini ${(r[f] || {})[k] ? 'on' : ''}" data-act="tog" data-f="${f}" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>`).join('')}
+    </section>
     <section class="card"><h2>整體感覺</h2>
       <div class="like">${LIKES.map(([k, e, l]) => `<button class="${r.like === k ? 'on ' + k : ''}" data-act="like" data-v="${k}"><span>${e}</span>${l}</button>`).join('')}</div>
       ${rated(r) && !r.like ? '<p class="hint" style="color:var(--w)">還沒選整體感覺，選了才會算進大家的排名</p>' : ''}
@@ -838,12 +840,7 @@ const ACT = {
   open(b){ openSession(b.dataset.code) },
   seg(b){
     const f = b.dataset.f, v = Number(b.dataset.v);
-    upd(r => {
-      if (r[f] === v) delete r[f]; else r[f] = v;
-      // 甜、回香改成「無」或取消時，小選項一起清掉
-      const sub = {sweet: 'sweetT', huixiang: 'hxT'}[f];
-      if (sub && !(r[f] > 0)) delete r[sub];
-    });
+    upd(r => { if (r[f] === v) delete r[f]; else r[f] = v });
     render();
   },
   chip(b){ const f = b.dataset.f, k = b.dataset.k, max = f === 'scents' ? 3 : 2; upd(r => { const m = r[f] || (r[f] = {}); const lv = ((m[k] || 0) + 1) % (max + 1); if (lv) m[k] = lv; else delete m[k]; if (!Object.keys(m).length) delete r[f] }); render() },
